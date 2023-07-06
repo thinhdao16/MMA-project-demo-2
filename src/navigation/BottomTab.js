@@ -11,10 +11,12 @@ import Search from '../views/Search/Search';
 import AccountScreen from './AccountScreen';
 import HomeScreen from './HomeScreen';
 import StoreScreen from './StoreScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTab = () => {
+
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({

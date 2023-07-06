@@ -14,6 +14,7 @@ import SearchBar from '../../components/SearchBar/SearchBar';
 import setting from '../../storage/database/setting';
 
 import styles from './Setting.style';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const SettingComponent = () => {
   return (
     <View>
@@ -31,6 +32,18 @@ const SettingComponent = () => {
 
 const Settings = () => {
   const navigation = useNavigation();
+  const handleLogout = async () => {
+    try {
+      // Clear the local storage
+      await AsyncStorage.removeItem('Access_Token');
+      
+      // Navigate to the login screen
+      navigation.navigate('Login');
+    } catch (error) {
+      // Handle the error
+      console.error(error);
+    }
+  };
   return (
     <Container insets={{top: true}}>
       <View style={styles.topHeader}>
@@ -77,7 +90,7 @@ const Settings = () => {
             onPress={() => navigation.navigate('Login')}>
             <Text style={styles.blueText}>ezgiceylan'dan Çıkış Yap</Text>
           </TouchableWithoutFeedback>
-          <Text style={styles.blueText}>Tüm Hesaplardan Çıkış Yap</Text>
+          <Text style={styles.blueText} onPress={handleLogout}>Đăng xuất</Text>
         </View>
       </ScrollView>
     </Container>

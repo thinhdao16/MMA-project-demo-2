@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Button, Image } from "react-native";
+import { StyleSheet, Text, View, Button, Image,TouchableOpacity } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import styles from './Login.styles';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginGG() {
+    const navigation = useNavigation();
     const [token, setToken] = useState("");
     const [userInfo, setUserInfo] = useState(null);
     const [user, setUser] = useState([])
@@ -45,57 +48,46 @@ export default function LoginGG() {
 
     const postTokenToServer = async (token) => {
         try {
-            const response = await axios.post("https://fhome2-be.vercel.app/login",
-                { accessToken: token }, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            // console.log("Token posted successfully to the server", response?.data);
-            setUser(response?.data?.data)
-            // Handle the server response if needed
+            const response = await axios.post(
+                "https://fhome2-be.vercel.app/login",
+                { accessToken: token },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            // Save the response to local storage
+            await AsyncStorage.setItem('Access_Token', JSON.stringify(response.data.data));
+            const storedData = await AsyncStorage.getItem('Access_Token');
+            if (JSON.parse(storedData)) {
+                // Navigate to 'BottomTab' screen
+                navigation.navigate('BottomTab');
+            }
         } catch (error) {
-            console.error("Failed to post token to the server:", error);
-            // Handle the error if needed
+            // Handle the error
+            console.error(error);
         }
     };
-    console.log(user)
     return (
-        <View style={styles.container}>
-            {!user ? (
-                <Button
-                    title="Sign in with Google"
-                    disabled={!request}
-                    onPress={() => {
-                        promptAsync();
-                    }}
-                />
-            ) : (
-                <View style={styles.card}>
-                    {user?.img && (
-                        <Image source={{ uri: user?.img }} style={styles.image} />
-                    )}
-                    <Text style={styles.text}>Email: {user?.user?.email}</Text>
-                    <Text style={styles.text}>
-                        Verified: {user.email ? "yes" : "no"}
-                    </Text>
-                    <Text style={styles.text}>Name: {user?.user?.fullname}</Text>
-                    {/* <Text style={styles.text}>{JSON.stringify(userInfo, null, 2)}</Text> */}
-                </View>
-            )}
-            <Button
-                title="remove local store"
-                onPress={async () => await AsyncStorage.removeItem("@user")}
-            />
+        <View style={styless.container}>
+            <TouchableOpacity
+                onPress={() => {
+                    promptAsync();
+                }}
+                style={styles.login}
+                disabled={!request}>
+                <Text style={styles.loginText}>Log In with Google</Text>
+            </TouchableOpacity>
         </View>
     );
 }
 
-const styles = StyleSheet.create({
+const styless = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
     },
