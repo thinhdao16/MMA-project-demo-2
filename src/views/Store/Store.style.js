@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   label: {
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     margin: 10,
-    marginBottom: 5,
+    marginBottom: 25,
   },
   videos: {
     backgroundColor: '#262626',
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
 
   btnImage: {
     backgroundColor: 'white',
-    height: 40,
+    height: 32,
     margin: 10,
     marginTop: 2,
     borderRadius: 10,
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 15,
     marginBottom: 10,
+    width:142
   },
   imagesText: {
     color: '#262626',
@@ -77,6 +78,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
     fontWeight: '500',
+  },
+  textInput: {
+    backgroundColor: '#262626',
+    height: 40,
+    margin: 10,
+    borderRadius: 10,
+    paddingLeft: 50,
+    padding: 5,
+    marginBottom: 10,
+    fontSize: 18,
+    color: 'white',
+    marginHorizontal: 15,
+    width:250,
+  },
+  iconInput: {
+    margin: 10,
+    padding: 10,
+    paddingLeft: 20,
+    position: 'absolute',
   },
 });
 export default styles;

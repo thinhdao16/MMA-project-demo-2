@@ -4,13 +4,29 @@ import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
-
+import moment from 'moment';
 import data from '../../storage/database/post';
 
 import styles from './HomeComponents.style';
+import { AuthContext } from '../../views/context/AuthContext';
 
 const Stories = () => {
   const navigation = useNavigation();
+  const {postingPush} = React.useContext(AuthContext)
+    const filteredData = postingPush?.filter((item) => {
+      const updatedAt = moment(item.updatedAt);
+      const now = moment();
+  
+      // Lấy thời gian hiện tại trừ thời gian cập nhật (updatedAt)
+      const diffHours = now.diff(updatedAt, 'hours');
+  
+      // Lọc các mục có updatedAt trong vòng 24 giờ trở lại
+      return diffHours <= 24;
+    });
+  
+  console.log("check",filteredData)
+  
+  // Sử dụng hàm handleData khi nhận được dữ liệu từ API hoặc từ nguồn dữ liệu khác
 
   const openCamera = React.useCallback(() => {
     ImagePicker.launchCamera({
@@ -32,7 +48,7 @@ const Stories = () => {
   return (
     <View style={styles.topContainer}>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        {data.map((data, index) => {
+        {filteredData.map((data, index) => {
           return (
             <TouchableOpacity
               activeOpacity={0.5}
@@ -43,10 +59,10 @@ const Stories = () => {
                   : navigation.navigate({
                       name: 'Story',
                       params: {
-                        image: data.postImage,
-                        name: data.name,
-                        pp: data.image,
-                        timeStory: data.timeStory,
+                        image: data?.img,
+                        name: data?.userPosting?.fullname,
+                        pp: data?.userPosting?.img,
+                        timeStory: data?.updatedAt,
                       },
                     });
               }}
@@ -57,15 +73,15 @@ const Stories = () => {
                     <View style={styles.plusIcon}>
                       <AntDesign name="pluscircle" size={16} color="#0195f7" />
                     </View>
-                    <Image source={data.image} style={styles.image2} />
+                    <Image source={{uri: data?.img}} style={styles.image2} />
                   </View>
                 ) : (
                   <View style={styles.circle}>
-                    <Image source={data.image} style={styles.image2} />
+                    <Image source={{uri:data?.img}} style={styles.image2} />
                   </View>
                 )}
 
-                <Text style={styles.textLabel}>{data.name}</Text>
+                <Text style={styles.textLabel}>{data.userPosting?.fullname}</Text>
               </View>
             </TouchableOpacity>
           );

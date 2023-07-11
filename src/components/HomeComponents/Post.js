@@ -29,7 +29,6 @@ const Post = () => {
   // const [data, setData] = useState([]);
   //
   const { postingPush, setPostingPush } = React.useContext(AuthContext)
-  console.log("home component", postingPush[0])
   const checkLike = React.useCallback((currentLike, postName) => {
     return currentLike.find(item => item === postName);
   }, []);
@@ -249,8 +248,8 @@ const Post = () => {
                 {data?.description}
               </Text>
             </View>
-          
-            <Text style={styles.comment}>Xem tất cả 19 bình luận</Text>
+            
+            <Text style={styles.comment}>Xem thêm . bình luận </Text>
 
             <View
               style={{

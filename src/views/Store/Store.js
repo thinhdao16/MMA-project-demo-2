@@ -6,7 +6,7 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
+  View, Alert, TextInput
 } from 'react-native';
 import BottomSheet from 'react-native-gesture-bottom-sheet';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -14,6 +14,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as FileSystem from 'expo-file-system';
+import Feather from 'react-native-vector-icons/Feather';
+
 
 import Container from '../../components/Container/Container';
 import SearchBar from '../../components/SearchBar/SearchBar';
@@ -30,7 +32,7 @@ const TopLabel = () => {
 
   return (
     <View style={styles.container}>
-      <View>
+      <View >
         <Text style={styles.label}>Tạo bài viết mới</Text>
       </View>
       <View style={styles.right}>
@@ -64,14 +66,16 @@ const TopLabel = () => {
 };
 
 const Store = () => {
-  const [image, setImage] = useState(null);
+  const [imageUri, setImageUri] = useState(null);
   const [token, setToken] = useState(null); // Trạng thái token
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   useEffect(() => {
     getPermissions();
   }, []);
 
   const getPermissions = async () => {
-    const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Quyền truy cập ảnh', 'Vui lòng cấp quyền truy cập ảnh để chọn ảnh từ thư viện.');
     }
@@ -92,24 +96,32 @@ const Store = () => {
     });
 
     if (!result.cancelled) {
-      setImage(result.uri);
+      // Lưu đường dẫn ảnh vào state hoặc biến khác
+      setImageUri(result.uri);
     }
   };
 
-  const handleSubmit = async () => {
-    if (image) {
-      try {
-        const accessToken = await AsyncStorage.getItem('Access_Token');
-        const dataToken = JSON.parse(accessToken)
-        const formData = new FormData(); 
-        formData.append('img', image);
+  const handleUploadImage = async () => {
+    if (imageUri) {
+      const accessToken = await AsyncStorage.getItem('Access_Token');
+      const dataToken = JSON.parse(accessToken);
+      const formData = new FormData();
 
+      formData.append('img', {
+        uri: imageUri,
+        type: 'image/jpeg',
+        name: 'image.jpg',
+      });
+
+      formData.append('description', description);
+      formData.append('title', title);
+      try {
         const response = await axios.post(
           'https://f-home-be.vercel.app/posts/create',
           formData,
           {
             headers: {
-              Authorization : `Bearer ${dataToken.accessToken}`,
+              Authorization: `Bearer ${dataToken.accessToken}`,
               'Content-Type': 'multipart/form-data',
             },
           }
@@ -123,15 +135,11 @@ const Store = () => {
       Alert.alert('Lỗi', 'Vui lòng chọn ảnh trước khi gửi.');
     }
   };
-
   return (
     <Container insets={{ top: true }}>
       <TopLabel />
-      <SearchBar placeHolders={true} />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <TouchableOpacity style={styles.videos}>
-          <Text style={styles.videosText}>Video</Text>
-        </TouchableOpacity>
+
         <View>
           <View
             style={{
@@ -139,16 +147,41 @@ const Store = () => {
               // flexWrap: 'wrap',
             }}>
 
-            <View>
-              {image ? (
-                <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+            <View style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+              {imageUri ? (
+                <Image source={{ uri: imageUri }} style={{ width: 340, height: 340, borderRadius: 15 }} />
               ) : (
-                <View style={{ width: 200, height: 200, backgroundColor: '#ccc' }} />
+                <Image source={{ uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUzGzTj0c4Gy2R6Gl856kAX1RiOxu38P9C8w&usqp=CAU" }} style={{ width: 100, height: 100, borderRadius: 15 }} />
               )}
               <TouchableOpacity style={styles.btnImage} onPress={pickImage}>
                 <Text style={styles.imagesText}>Chọn từ máy bạn</Text>
               </TouchableOpacity>
-              <Button title="Gửi" onPress={handleSubmit} />
+                          <View>
+                <TextInput
+                  value={title}
+                  onChangeText={setTitle}
+                  placeholder="Input title"
+                  placeholderTextColor="grey"
+                  style={styles.textInput}
+                />
+                <Feather name="type" size={20} color="white" style={styles.iconInput} />
+              </View>
+              <View>
+                <TextInput
+                  value={description}
+                  onChangeText={setDescription}
+                  placeholder="Input description"
+                  placeholderTextColor="grey"
+                  style={styles.textInput}
+                />
+                <Feather name="file-text" size={20} color="white" style={styles.iconInput} />
+              </View>
+
+              <Button title="Gửi" onPress={handleUploadImage} />
             </View>
           </View>
         </View>
