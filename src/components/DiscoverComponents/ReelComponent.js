@@ -26,14 +26,14 @@ const Reel = ({ item }) => {
         height: height,
         justifyContent: 'flex-end',
       }}>
-      <Video
+      {/* <Video
         videoRef={ref}
         source={item.video}
         resizeMode="cover"
         repeat={true}
         style={{ ...styles.video, height: height }}
         muted={true}
-      />
+      /> */}
 
       <View
         style={{

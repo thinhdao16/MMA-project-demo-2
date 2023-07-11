@@ -43,7 +43,7 @@ const TopBar = () => {
 
       <View style={styles.iconContainer}>
         <TouchableOpacity
-          onPress={() => openCamera()}
+          // onPress={() => openCamera()}
         >
           <FontAwesome name="plus-square-o" size={24} color="white" />
         </TouchableOpacity>

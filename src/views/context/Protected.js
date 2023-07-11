@@ -1,0 +1,12 @@
+home component {
+    "__v": 0, "_id": "647f01e6ad782d626f449eb9", "buildings": 
+    { "__v": 0, "_id": "64038a4f0a27a8c98f9b2f2f", "address": "512 đường Nguyễn Xiển, Phường Long Thạnh Mỹ, Quận 9, TP. Thủ Đức", "buildingName": "S501", "createdAt": "2023-03-04T18:13:35.044Z", "status": true, "updatedAt": "2023-03-04T18:13:35.044Z" },
+    
+     "createdAt": "2023-06-06T09:52:38.534Z", "description": "ce", "img": "https://storage.googleapis.com/auth-fhome.appspot.com/room/57bb12f8-9c5e-4cc6-8cdc-d10000121f07.jpg?GoogleAccessId=firebase-adminsdk-ihy8a%40auth-fhome.iam.gserviceaccount.com&Expires=1688637159&Signature=LATyco%2Fi3davRJAUILKj2oL1%2Bvy%2Bv0ZJietYemlNje%2FRd92AupKum6rJT%2FY%2BQxCEtiSSNkmUA8cqAEaz8TZ8G67EKysUaFAynkgrTw8gd6b%2BbhUHwRbtlYqlbcl4KFLt%2FXfTIhkrlMM6SBLrjZtSVdGEh%2FxawnOV%2F3EefVjcCvHLDFx%2BvM2ytv53cYdWB4KL6jQJQjnBF%2FLJWZS4zTDTR6z6%2Bka%2FRS7Xho9Y66bsAWtxqPNinul6r7UFNbT670hAkzuwaW0fzPaJ8r3mtWVdHE60dkDc2795nZbJnEOcxfqkFihQjSFK1MUoDz9CCd6OAXjiEp%2BYfHkjLyTn%2FEaOhA%3D%3D", "invoiceId": "INV2-D6XV-TSLY-3QB6-7JJ7",
+      "rooms": {
+        "__v": 0, "_id": "647f01b1ad782d626f449ea0", "buildings": "64038a4f0a27a8c98f9b2f2f", "createdAt": "2023-06-06T09:51:45.470Z", "description": "nice", "img": "https://storage.googleapis.com/auth-fhome.appspot.com/room/a91f91d9-e192-4336-88ef-21478210a381.jpg?GoogleAccessId=firebase-adminsdk-ihy8a%40auth-fhome.iam.gserviceaccount.com&Expires=1688637105&Signature=so7GfiGxyWrvcX4C8qkFdACtV3pUisvToi91BnzDK0Izf2KHaSU%2F2%2FjJIN8TqjkL94%2F4apxVQKafoZRJ9YDH1hUMczT%2BREgcAQikoqroOEQPxdG8F8Amq6tya%2B1jBpQAYTkEw5Tvi1qOz4pVDCPy7isomB%2FpFke4J5m52PkKIx7TRkXHlTA0D5chj8wM2nVaNHk5dmsc7ybdj%2FMiv06S5N%2FbMPLqEWolZyf10vaiXqD%2FwuIl6KP3wKCczF3abTFuPQZjGBOCpHmTLhKEDIo0mC8L9f52MaaB6c835CLgrW%2B42wDlJiFKfFu27Fc%2FVsWcHeh6SxoW7uG41mXO91VZAw%3D%3D", "price":
+        5000, "roomName": "H201", "size": 40, "status": true, "updatedAt": "2023-06-06T09:51:45.470Z", "users": "647f018aad782d626f449e90"
+    },
+     "status": "published", "title": "nicce", "updatedAt": "2023-06-06T09:53:40.131Z", "userPosting": 
+    { "__v": 0, "_id": "647f018aad782d626f449e90", "createdAt": "2023-06-06T09:51:06.409Z", "email": "16thinhdao@gmail.com", "fullname": "thinh dao", "img": "https://lh3.googleusercontent.com/a/AEdFTp5vbwijZHk86uTnmh_JxEEQE-xqU_9tlffSa58y=s96-c", "phoneNumber": "0975647951", "point": 199, "roleName": "landlord", "status": true, "updatedAt": "2023-07-10T10:52:53.593Z" }
+}

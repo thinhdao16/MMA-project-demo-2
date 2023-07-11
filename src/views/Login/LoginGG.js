@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Button, Image,TouchableOpacity } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import { StyleSheet, Text, View, Button, Image, TouchableOpacity } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import styles from './Login.styles';
+import { AuthContext } from "../context/AuthContext";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -14,6 +15,7 @@ export default function LoginGG() {
     const [token, setToken] = useState("");
     const [userInfo, setUserInfo] = useState(null);
     const [user, setUser] = useState([])
+    const {setPostingPush}  = useContext(AuthContext)
     const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
         androidClientId:
             "475648005655-j0mocu3071hhudacuhfrsn2kqe13mocn.apps.googleusercontent.com",
@@ -64,6 +66,20 @@ export default function LoginGG() {
             const storedData = await AsyncStorage.getItem('Access_Token');
             if (JSON.parse(storedData)) {
                 // Navigate to 'BottomTab' screen
+                const tokenData = JSON.parse(storedData)
+                const response = await fetch('https://f-home-be.vercel.app/posts', {
+                    headers: {
+                        Authorization: `Bearer ${tokenData.accessToken}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const responseData = await response.json();
+                // setData(responseData);
+                // console.log(responseData.data)
+                setPostingPush(responseData.data.postings)
                 navigation.navigate('BottomTab');
             }
         } catch (error) {

@@ -23,6 +23,13 @@ export default StyleSheet.create({
     marginRight: 10,
     marginLeft: 7,
   },
+  profilImageComment: {
+    width: 20,
+    height: 20,
+    borderRadius: 100,
+    marginRight: 10,
+    marginLeft: 7,
+  },
   title: {
     fontWeight: 'bold',
     fontSize: 14,

@@ -37,6 +37,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
+  btnImage: {
+    backgroundColor: 'white',
+    height: 40,
+    margin: 10,
+    marginTop: 2,
+    borderRadius: 10,
+    fontSize: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 15,
+    marginBottom: 10,
+  },
+  imagesText: {
+    color: '#262626',
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+
   labelText: {
     color: 'white',
     fontSize: 16,

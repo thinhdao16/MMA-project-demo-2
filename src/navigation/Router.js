@@ -1,5 +1,5 @@
 import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Comment from '../views/Comment/Comment';
 import Login from '../views/Login/Login';
@@ -16,7 +16,8 @@ const Router = () => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-      }}>
+      }}
+    >
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="BottomTab" component={BottomTab} />
       <Stack.Screen name="MessageScreen" component={MessageScreen} />
@@ -33,4 +34,5 @@ const Router = () => {
     </Stack.Navigator>
   );
 };
+
 export default Router;
