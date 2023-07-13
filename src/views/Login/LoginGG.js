@@ -15,7 +15,7 @@ export default function LoginGG() {
     const [token, setToken] = useState("");
     const [userInfo, setUserInfo] = useState(null);
     const [user, setUser] = useState([])
-    const {setPostingPush}  = useContext(AuthContext)
+    const { fetchAllData ,setAccessToken } = useContext(AuthContext)
     const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
         androidClientId:
             "475648005655-j0mocu3071hhudacuhfrsn2kqe13mocn.apps.googleusercontent.com",
@@ -29,6 +29,7 @@ export default function LoginGG() {
     useEffect(() => {
         handleEffect();
     }, [response, token]);
+
     async function handleEffect() {
         const user = await getLocalUser();
         if (!user) {
@@ -40,8 +41,11 @@ export default function LoginGG() {
         } else {
             setUserInfo(user);
             console.log("loaded locally");
+            fetchAllData(user.accessToken); // Gọi lại API khi có thông tin user từ local storage
         }
     }
+
+
     const getLocalUser = async () => {
         const data = await AsyncStorage.getItem("@user");
         if (!data) return null;
@@ -51,42 +55,27 @@ export default function LoginGG() {
     const postTokenToServer = async (token) => {
         try {
             const response = await axios.post(
-                "https://fhome2-be.vercel.app/login",
+                "https://f-home-be.vercel.app/login",
                 { accessToken: token },
                 {
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
-
-            // Save the response to local storage
+            navigation.navigate('BottomTab');
             await AsyncStorage.setItem('Access_Token', JSON.stringify(response.data.data));
             const storedData = await AsyncStorage.getItem('Access_Token');
             if (JSON.parse(storedData)) {
-                // Navigate to 'BottomTab' screen
-                const tokenData = JSON.parse(storedData)
-                const response = await fetch('https://f-home-be.vercel.app/posts', {
-                    headers: {
-                        Authorization: `Bearer ${tokenData.accessToken}`,
-                    },
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const responseData = await response.json();
-                // setData(responseData);
-                // console.log(responseData.data)
-                setPostingPush(responseData.data.postings)
-                navigation.navigate('BottomTab');
+                const tokenData = JSON.parse(storedData);
+                setAccessToken(tokenData)
+                fetchAllData(tokenData.accessToken); // Gọi lại API khi có thông tin token từ server
             }
         } catch (error) {
-            // Handle the error
             console.error(error);
         }
     };
+
     return (
         <View style={styless.container}>
             <TouchableOpacity

@@ -24,6 +24,7 @@ import store from '../../storage/database/store';
 import styles from './Store.style';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
 
@@ -70,6 +71,7 @@ const Store = () => {
   const [token, setToken] = useState(null); // Trạng thái token
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const {fetchAllData} = React.useContext(AuthContext)
   useEffect(() => {
     getPermissions();
   }, []);
@@ -128,6 +130,7 @@ const Store = () => {
         );
 
         console.log('Gửi ảnh lên server thành công:', response.data);
+        fetchAllData(dataToken.accessToken)
       } catch (error) {
         console.error('Lỗi khi gửi ảnh lên server:', error);
       }

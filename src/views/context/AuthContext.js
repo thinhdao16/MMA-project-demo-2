@@ -6,22 +6,56 @@ import axios from 'axios';
 export const AuthContext = createContext();
 
 export function AuthContextProvider({ children }) {
-    const [user, setUser] = useState({});
-    const [accessToken, setAccessToken] = useState('');
-    const [buildings, setBuildings] = useState([]);
-    const buildingsData = buildings.data;
-    const [posting, setPosting] = useState([]);
-    const [imgPostDraft, setImgPostDraft] = useState(null);
+
     const [allCmt, setAllCmt] = useState([]);
     const [isLiked, setIsLiked] = useState([]);
-    const [chooseWant, setChooseWant] = useState([]);
     const [point, setPoint] = useState([]);
-    const [isPendingUpdated, setIsPendingUpdated] = useState(null);
-    const [selectedPost, setSelectedPost] = useState(null);
     const [userProfile, setUserProfile] = useState([]);
-    const [openModal, setOpenModal] = useState(false);
     const [reloadUserProfile, setReloadUserProfile] = useState(null);
     const [postingPush, setPostingPush] = useState([]);
+    const [singlePage, setSinglePage] = useState([]);
+    const [accessToken ,setAccessToken] = useState([]);
+    //data global
+
+    const fetchAllData = async (accessToken) => {
+        try {
+            const response = await fetch('https://f-home-be.vercel.app/posts', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            const responseCmt = await fetch('https://f-home-be.vercel.app/allComment', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            const responseLike = await fetch("https://f-home-be.vercel.app/getAllFavourite", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            if (!responseCmt.ok) {
+                throw new Error(`HTTP error! Status: ${responseCmt.status}`);
+            }
+            if (!responseLike.ok) {
+                throw new Error(`HTTP error! Status: ${responseLike.status}`);
+            }
+            const responseData = await response.json();
+            const responseDataCmt = await responseCmt.json();
+            const responseDataLike = await responseLike.json()
+            setPostingPush(responseData.data.postings);
+            setAllCmt(responseDataCmt.data.postingComments);
+            setIsLiked(responseDataLike.data.favourite);
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
 
 
@@ -29,7 +63,8 @@ export function AuthContextProvider({ children }) {
     return (
         <AuthContext.Provider
             value={{
-                postingPush, setPostingPush
+                postingPush, setPostingPush, allCmt, setAllCmt, fetchAllData,
+                singlePage, setSinglePage,isLiked, setIsLiked,accessToken ,setAccessToken
             }}
         >
             {children}
