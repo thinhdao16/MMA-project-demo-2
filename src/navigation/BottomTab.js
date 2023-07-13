@@ -12,11 +12,12 @@ import AccountScreen from './AccountScreen';
 import HomeScreen from './HomeScreen';
 import StoreScreen from './StoreScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../views/context/AuthContext';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTab = () => {
-
+  const {userProfile} = React.useContext(AuthContext)
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
@@ -49,7 +50,7 @@ const BottomTab = () => {
             return (
               <Avatar.Image
                 size={28}
-                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
+                source={{ uri: userProfile?.img }}
               />
             );
           }

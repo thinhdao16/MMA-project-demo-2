@@ -83,7 +83,7 @@ const Store = () => {
   const [token, setToken] = useState(null); // Trạng thái token
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-
+  const {fetchAllData} = React.useContext(AuthContext)
   useEffect(() => {
     getPermissions();
   }, []);
@@ -137,7 +137,7 @@ const Store = () => {
       formData.append('title', title);
       try {
         const response = await axios.post(
-          'https://f-home-be.vercel.app/posts/create',
+          'https://trading-stuff-be-iphg.vercel.app/post/create',
           formData,
           {
             headers: {

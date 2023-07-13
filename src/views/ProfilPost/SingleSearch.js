@@ -15,7 +15,6 @@ const SingleSearch = () => {
     const navigation = useNavigation();
 
     const { singlePage, allCmt } = React.useContext(AuthContext)
-    console.log("singlePost", singlePage)
     return (
         <Container insets={{ top: true, bottom: true }}>
             <View>

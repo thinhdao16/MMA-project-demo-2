@@ -55,7 +55,7 @@ export default function LoginGG() {
     const postTokenToServer = async (token) => {
         try {
             const response = await axios.post(
-                "https://f-home-be.vercel.app/login",
+                "https://trading-stuff-be-iphg.vercel.app/auth/login",
                 { accessToken: token },
                 {
                     headers: {

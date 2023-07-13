@@ -27,7 +27,7 @@ const Comment = ({ navigation, route }) => {
     formData.append('posting', route.params.idPost);
     try {
       const response = await axios.post(
-        'https://f-home-be.vercel.app/postAllPostingCommentByPost',
+        'https://trading-stuff-be-iphg.vercel.app/comment/create',
         formData,
         {
           headers: {

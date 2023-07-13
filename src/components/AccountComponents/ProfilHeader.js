@@ -1,19 +1,22 @@
 import React from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native';
+import { AuthContext } from '../../views/context/AuthContext';
 const defaultImage = { uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' };
 const ProfileHeader = ({ route }) => {
+  const{userProfile,postingPush} = React.useContext(AuthContext)
+  console.log(postingPush)
   return (
     <View style={styles.container3}>
       <View>
         <Image
-          source={route ? { uri: route.image } : defaultImage}
+          source={ { uri: userProfile?.img } }
           style={styles.image3}
         />
       </View>
 
       <View style={styles.numbers}>
         <View style={styles.left}>
-          <Text style={styles.numberContainer}>2</Text>
+          <Text style={styles.numberContainer}>{postingPush?.filter((post) => post?.user === userProfile?.id).length}</Text>
           <Text style={styles.text}>Bài viết</Text>
         </View>
 

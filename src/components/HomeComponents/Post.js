@@ -28,7 +28,6 @@ const Post = () => {
   const bottomSheet = useRef();
   const { postingPush, setPostingPush, allCmt, isLiked, setIsLiked, accessToken, fetchAllData } = React.useContext(AuthContext)
 
-
   const renderItem = ({ item }) => {
     return (
       <View>
@@ -63,10 +62,9 @@ const Post = () => {
     console.log('Gửi dữ liệu lên server');
   };
   const handleLike = async ( id) => {
-    console.log("likeid", id)
     axios
       .post(
-        "https://f-home-be.vercel.app/createFavouritePost",
+        "https://trading-stuff-be-iphg.vercel.app/comment/create",
         { postId: id },
         {
           headers: {
@@ -86,7 +84,7 @@ const Post = () => {
     const idLike = isLiked?.filter((like) => like?.post?._id === id)?.[0]._id;
     event.preventDefault();
     axios
-      .delete(`https://f-home-be.vercel.app/deleteFavouritePost/${idLike}`, {
+      .delete(`https://trading-stuff-be-iphg.vercel.app/deleteFavouritePost/${idLike}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken.accessToken}`,
@@ -109,7 +107,7 @@ const Post = () => {
               new Date(a?.updatedAt).getTime()
             );
           })
-          .map((data, index) => {
+          ?.map((data, index) => {
             return (
               <View key={index} style={{ marginBottom: 10 }}>
                 {/* user */}

@@ -48,7 +48,7 @@ const Stories = () => {
   return (
     <View style={styles.topContainer}>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        {filteredData.map((data, index) => {
+        {filteredData?.map((data, index) => {
           return (
             <TouchableOpacity
               activeOpacity={0.5}

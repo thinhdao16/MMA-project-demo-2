@@ -19,23 +19,28 @@ export function AuthContextProvider({ children }) {
 
     const fetchAllData = async (accessToken) => {
         try {
-            const response = await fetch('https://f-home-be.vercel.app/posts', {
+            const response = await fetch('https://trading-stuff-be-iphg.vercel.app/post', {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            const responseCmt = await fetch('https://f-home-be.vercel.app/allComment', {
+            const responseCmt = await fetch('https://trading-stuff-be-iphg.vercel.app/comment', {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            const responseLike = await fetch("https://f-home-be.vercel.app/getAllFavourite", {
+            const responseLike = await fetch("https://trading-stuff-be-iphg.vercel.app/favourite", {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-
+            const responseProfle = await fetch("https://trading-stuff-be-iphg.vercel.app/user/me", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -48,10 +53,11 @@ export function AuthContextProvider({ children }) {
             const responseData = await response.json();
             const responseDataCmt = await responseCmt.json();
             const responseDataLike = await responseLike.json()
-            setPostingPush(responseData.data.postings);
+            const responseDataProfile = await responseProfle.json()
+            setPostingPush(responseData.data.posts);
             setAllCmt(responseDataCmt.data.postingComments);
             setIsLiked(responseDataLike.data.favourite);
-
+            setUserProfile(responseDataProfile)
         } catch (error) {
             console.error(error);
         }
@@ -64,7 +70,7 @@ export function AuthContextProvider({ children }) {
         <AuthContext.Provider
             value={{
                 postingPush, setPostingPush, allCmt, setAllCmt, fetchAllData,
-                singlePage, setSinglePage,isLiked, setIsLiked,accessToken ,setAccessToken
+                singlePage, setSinglePage,isLiked, setIsLiked,accessToken ,setAccessToken,userProfile, setUserProfile
             }}
         >
             {children}

@@ -138,7 +138,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    width: '34%',
+    width: '38%',
     marginRight: 10,
   },
   logoContainer: {

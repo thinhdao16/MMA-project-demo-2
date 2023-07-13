@@ -12,7 +12,6 @@ import { AuthContext } from '../context/AuthContext';
 
 const SinglePost = ({ navigation, item }) => {
   const { singlePage,allCmt } = React.useContext(AuthContext)
-  console.log("singlePost", singlePage)
   return (
     <Container insets={{ top: true, bottom: true }}>
       <View>
