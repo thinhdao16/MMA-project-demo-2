@@ -38,20 +38,20 @@ const styles = StyleSheet.create({
   },
 
   btnImage: {
-    backgroundColor: 'white',
+    backgroundColor: '#1877f2',
     height: 32,
     margin: 10,
-    marginTop: 2,
+    marginTop: 15,
     borderRadius: 10,
     fontSize: 18,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 15,
     marginBottom: 10,
-    width:142
+    width: 142
   },
   imagesText: {
-    color: '#262626',
+    color: 'white',
     fontSize: 15,
     fontWeight: 'bold',
   },
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     marginHorizontal: 15,
-    width:250,
+    width: 300,
   },
   iconInput: {
     margin: 10,
@@ -98,5 +98,23 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     position: 'absolute',
   },
+  btnSubmit: {
+    backgroundColor: 'white',
+    height: 32,
+    margin: 10,
+    marginTop: 2,
+    borderRadius: 10,
+    fontSize: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 15,
+    marginBottom: 10,
+    width: 50
+  },
+  submit: {
+    color: 'black',
+    fontSize: 15,
+    fontWeight: 'bold',
+  }
 });
 export default styles;
