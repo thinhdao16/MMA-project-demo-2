@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Image, Text, TouchableOpacity, View} from 'react-native';
+import React, { useState } from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -8,35 +8,38 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Container from '../../components/Container/Container';
 
 import styles from './Post.styles';
+import { AuthContext } from '../context/AuthContext';
 
-const SinglePost = ({navigation}) => {
+const SinglePost = ({ navigation, item }) => {
+  const { singlePage,allCmt } = React.useContext(AuthContext)
+  console.log("singlePost", singlePage)
   return (
-    <Container insets={{top: true, bottom: true}}>
+    <Container insets={{ top: true, bottom: true }}>
       <View>
         <View style={styles.left}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="chevron-back" size={28} color="white" />
           </TouchableOpacity>
-          <Text style={styles.label}> Gönderiler</Text>
+          <Text style={styles.label}> Post</Text>
         </View>
-        <View style={{marginBottom: 10, marginTop: 15}}>
+        <View style={{ marginBottom: 10, marginTop: 15 }}>
           <View style={styles.top}>
             <View style={styles.topleft}>
               <Image
-                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
+                source={{ uri: singlePage?.userPosting?.img }}
                 style={styles.profilImage}
               />
-              <Text style={styles.title}>ezgiceylan</Text>
+              <Text style={styles.title}>{singlePage?.userPosting?.fullname}</Text>
             </View>
 
-            <TouchableOpacity style={{alignSelf: 'center', marginRight: 10}}>
+            <TouchableOpacity style={{ alignSelf: 'center', marginRight: 10 }}>
               <Feather name="more-vertical" size={20} color="#F5F5F5" />
             </TouchableOpacity>
           </View>
 
-          <View style={{height: 400}}>
+          <View style={{ height: 400 }}>
             <Image
-              source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
+              source={{ uri: singlePage?.img }}
               style={styles.ımage}
             />
           </View>
@@ -53,21 +56,32 @@ const SinglePost = ({navigation}) => {
               <Feather name="send" size={24} color="white" />
             </View>
 
-            <View style={{marginRight: 20}}>
+            <View style={{ marginRight: 20 }}>
               <FontAwesome name="bookmark-o" size={24} color="white" />
             </View>
           </View>
 
-          <Text style={styles.likeText}>700 beğenme</Text>
+          <Text style={styles.likeText}>like</Text>
 
-          <View style={{flexDirection: 'row', marginTop: 5, marginBottom: 5}}>
-            <Text style={styles.postName}>ezgiceylan</Text>
-            <Text style={{color: 'white', marginTop: 2}}> smile..</Text>
+          <View style={{ flexDirection: 'row', marginTop: 5, marginBottom: 5 }}>
+            <Text style={styles.postName}>{singlePage?.userPosting?.fullname}</Text>
+            <Text style={{ color: 'white', marginTop: 2 }}> {singlePage?.description}</Text>
           </View>
 
-          <Text style={styles.comment}>2 yorumun tümünü gör</Text>
+          <Text style={styles.comment} onPress={() =>
+            navigation.navigate({
+              name: 'Comment',
+              params:
+              {
+                allCmt: allCmt?.filter?.((cmt) => cmt?.posting?._id === singlePage?._id),
+                image: singlePage?.userPosting?.img,
+                user: singlePage?.userPosting?.fullname,
+                explanation: singlePage?.description,
+              },
+            })
+          }>Xem thêm {allCmt?.filter?.((cmt) => cmt?.posting?._id === singlePage?._id).length} bình luận </Text>
 
-          <Text style={styles.time}>10 ekim</Text>
+          <Text style={styles.time}>{singlePage?.updatedAt}</Text>
         </View>
       </View>
     </Container>

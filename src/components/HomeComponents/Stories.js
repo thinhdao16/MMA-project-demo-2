@@ -24,7 +24,7 @@ const Stories = () => {
       return diffHours <= 24;
     });
   
-  console.log("check",filteredData)
+  // console.log("check",filteredData)
   
   // Sử dụng hàm handleData khi nhận được dữ liệu từ API hoặc từ nguồn dữ liệu khác
 

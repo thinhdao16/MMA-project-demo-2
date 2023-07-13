@@ -15,8 +15,32 @@ import Container from '../../components/Container/Container';
 import data from '../../storage/database/comment';
 
 import styles from './Comment.style';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Comment = ({ navigation, route }) => {
   const [commentText, setCommentText] = useState('');
+  const handleUploadImage = async () => {
+    const accessToken = await AsyncStorage.getItem('Access_Token');
+    const dataToken = JSON.parse(accessToken);
+    const formData = new FormData();
+
+    formData.append('description', commentText);
+    formData.append('posting', route.params.idPost);
+    try {
+      const response = await axios.post(
+        'https://f-home-be.vercel.app/postAllPostingCommentByPost',
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${dataToken.accessToken}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      console.log('Gửi ảnh lên server thành công:', response.data);
+    } catch (error) {
+      console.error('Lỗi khi gửi ảnh lên server:', error);
+    }
+  };
 
   return (
     <Container insets={{ top: true, bottom: true }}>
@@ -37,7 +61,7 @@ const Comment = ({ navigation, route }) => {
 
           <ScrollView>
             <View style={styles.topComment}>
-              <Image style={styles.image} source={route.params.image} />
+              <Image style={styles.image} source={{ uri: route.params.image }} alt='https://cdn-icons-png.flaticon.com/512/1088/1088537.png' />
               <View style={{ marginLeft: 10 }}>
                 <Text style={{ color: 'white', fontWeight: 'bold' }}>
                   {route.params.user}
@@ -49,7 +73,7 @@ const Comment = ({ navigation, route }) => {
             </View>
 
             <View style={styles.line} />
-            {data.map((data, index) => {
+            {route?.params?.allCmt.map((data, index) => {
               return (
                 <View
                   key={index}
@@ -58,7 +82,7 @@ const Comment = ({ navigation, route }) => {
                     flexDirection: 'row',
                   }}>
                   <View style={styles.comment}>
-                    <Image style={styles.images} source={data.image} />
+                    <Image style={styles.images} source={{ uri: data?.userPostingComment?.img }} />
                     <View style={{ marginLeft: 10 }}>
                       <Text
                         style={{
@@ -66,11 +90,11 @@ const Comment = ({ navigation, route }) => {
                           fontWeight: 'bold',
                           fontSize: 13,
                         }}>
-                        {data.user}
+                        {data?.userPostingComment?.fullname}
                       </Text>
                       <Text
                         style={{ color: 'white', marginTop: 5, fontSize: 15 }}>
-                        {data.comment}
+                        {data?.description}
                       </Text>
                       <View style={{ flexDirection: 'row', marginTop: 5 }}>
                         <Text style={styles.answer}>Trả lời</Text>
@@ -100,19 +124,20 @@ const Comment = ({ navigation, route }) => {
               source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
             />
             <TextInput
-              placeholder="ezgiceylan olarak yorum yap.."
-              placeholderTextColor={'#969696'}
+              placeholder={`Comment under the name ${route.params.user} ...`}
+              placeholderTextColor="#969696"
               style={styles.input}
               value={commentText}
               onChangeText={setCommentText}
             />
+
           </View>
 
           <View>
             {!commentText.length ? (
-              <Text style={{ color: '#254253', marginRight: 15 }}>Paylaş</Text>
+              <Text style={{ color: '#254253', marginRight: 15 }}>Chia sẻ</Text>
             ) : (
-              <Text style={{ color: '#0096fd', marginRight: 15 }}>Paylaş</Text>
+              <Text style={{ color: '#0096fd', marginRight: 15 }}onPress = {handleUploadImage}>Chia sẻ</Text>
             )}
           </View>
         </View>
