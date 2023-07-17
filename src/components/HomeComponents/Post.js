@@ -27,7 +27,7 @@ const Post = () => {
   const [like, setLike] = useState([]);
   const bottomSheet = useRef();
   const { postingPush, setPostingPush, allCmt, isLiked, setIsLiked, accessToken, fetchAllData } = React.useContext(AuthContext)
-
+console.log(postingPush[0])
   const renderItem = ({ item }) => {
     return (
       <View>
@@ -62,6 +62,7 @@ const Post = () => {
     console.log('Gửi dữ liệu lên server');
   };
   const handleLike = async ( id) => {
+    console.log(id)
     axios
       .post(
         "https://trading-stuff-be-iphg.vercel.app/comment/create",

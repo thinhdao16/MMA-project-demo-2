@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -17,33 +18,48 @@ import { useNavigation } from '@react-navigation/native';
 import DefaultImage from '../../../assets/images/profil.jpg';
 
 import styles from './ProfilEdit.style';
+import { AuthContext } from '../context/AuthContext';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfilEdit = () => {
-  const [name, setName] = useState('CEYLAN');
-  const [bio, setBio] = useState('Marmara Üniversitesi');
+  const [name, setName] = useState(userProfile?.fullname);
+  const [phone, setPhone] = useState(userProfile?.phoneNumber)
   const [image, setImage] = useState();
   const navigation = useNavigation();
   const bottomSheet = useRef();
+  const { userProfile, fetchAllData } = React.useContext(AuthContext)
 
-  const chooseFromLibrary = () => {
-    ImagePicker.launchImageLibrary({
-      mediaType: 'photo',
-      maxWidth: 100,
-      maxHeight: 100,
-      cropping: true,
-      includeBase64: false,
-    }, response => {
-      if (response.didCancel) {
-        // Xử lý khi người dùng hủy chọn ảnh
-      } else if (response.error) {
-        // Xử lý khi xảy ra lỗi trong quá trình chọn ảnh
-      } else {
-        setImage(response.uri);
-        bottomSheet.current.close();
-      }
-    });
+  const handleSubmitFormProfile = async (e) => {
+    const storedData = await AsyncStorage.getItem('Access_Token');
+    const accessToken = JSON.parse(storedData)
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("fullname", name);
+    formData.append("phoneNumber", phone);
+    // formData.append("img", newImage);
+    try {
+      const response = await axios.put(
+        "https://trading-stuff-be-iphg.vercel.app/user/edit",
+        // formData,
+        {
+          phoneNumber: phone,
+          fullname: name,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken.accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      ToastAndroid.show('Chỉnh sửa thành công!', ToastAndroid.SHORT);
+      fetchAllData(accessToken.accessToken)
+      navigation.goBack()
+    } catch (error) {
+      console.error(error);
+    }
   };
-
   return (
     <SafeAreaView style={styles.body}>
       <View style={{ margin: 10 }}>
@@ -61,15 +77,8 @@ const ProfilEdit = () => {
           </View>
           <View style={styles.right}>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate({
-                  name: 'Account',
-                  params: {
-                    name: name,
-                    bio: bio,
-                    image: image,
-                  },
-                })
+              onPress={
+                handleSubmitFormProfile
               }>
               <AntDesign
                 name="check"
@@ -84,11 +93,11 @@ const ProfilEdit = () => {
         <View style={styles.profile}>
           <Image
             style={styles.image}
-            source={image ? { uri: image } : DefaultImage}
+            source={userProfile?.img ? { uri: userProfile?.img } : DefaultImage}
           />
 
           <TouchableOpacity onPress={() => bottomSheet.current.show()}>
-            <Text style={styles.change}> Profil fotoğrafını değiştir</Text>
+            <Text style={styles.change}> Thay đổi ảnh hồ sơ</Text>
           </TouchableOpacity>
 
           <BottomSheet
@@ -99,7 +108,7 @@ const ProfilEdit = () => {
             <View style={{ marginLeft: 10 }}>
               <View style={{ marginTop: 25, marginBottom: 15 }}>
                 <Text style={styles.sheetText}>
-                  Profil fotoğrafını değiştir
+                  Thay đổi ảnh hồ sơ
                 </Text>
               </View>
 
@@ -107,9 +116,9 @@ const ProfilEdit = () => {
 
               <TouchableOpacity
                 style={{ marginVertical: 20 }}
-                onPress={chooseFromLibrary}
+              // onPress={chooseFromLibrary}
               >
-                <Text style={styles.sheetText}>Yeni Profil Fotoğrafı</Text>
+                <Text style={styles.sheetText}>Ảnh hồ sơ mới</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={{ marginVertical: 15 }}
@@ -124,7 +133,7 @@ const ProfilEdit = () => {
               <View style={{ marginVertical: 15 }}>
                 <Text
                   style={{ color: '#be363f', fontWeight: '500', fontSize: 18 }}>
-                  Profil fotoğrafını kaldır
+                  Xóa ảnh hồ sơ
                 </Text>
               </View>
             </View>
@@ -132,17 +141,20 @@ const ProfilEdit = () => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Ad</Text>
-          <TextInput style={styles.input} onChangeText={item => setName(item)}>
-            {name}
+          <Text style={styles.inputLabel}>FullName</Text>
+          <TextInput style={styles.input} defaultValue={userProfile?.fullname} onChangeText={setName} />
+          <View style={styles.line} />
+          <Text style={styles.inputLabel}>PhoneNumber</Text>
+          <TextInput style={styles.input} defaultValue={userProfile?.phoneNumber} onChangeText={setPhone} />
+          <View style={styles.line} />
+          <Text style={styles.inputLabel}>Point</Text>
+          <TextInput style={styles.input} readOnly={true}>
+            {userProfile?.point}
           </TextInput>
           <View style={styles.line} />
-          <Text style={styles.inputLabel}>Kullanıcı adı</Text>
-          <Text style={styles.input}>ezgiceylan</Text>
-          <View style={styles.line} />
-          <Text style={styles.inputLabel}>Biyografi</Text>
-          <TextInput style={styles.input} onChangeText={item => setBio(item)}>
-            {bio}
+          <Text style={styles.inputLabel}>Email</Text>
+          <TextInput style={styles.input} readOnly={true}>
+            {userProfile?.email}
           </TextInput>
           <View style={styles.line} />
         </View>
@@ -155,19 +167,19 @@ const ProfilEdit = () => {
               marginLeft: 10,
               marginBottom: 5,
             }}>
-            Bağlantı ekle
+            Thêm liên kết
           </Text>
         </View>
 
         <View style={styles.blueContainer}>
           <TouchableOpacity
             onPress={() => navigation.navigate('OnboardingScreen')}>
-            <Text style={styles.blueText}>Profesyonel Hesaba Geçiş Yap</Text>
+            <Text style={styles.blueText}>Chuyển sang tài khoản chuyên nghiệp</Text>
           </TouchableOpacity>
 
-          <Text style={styles.blueText}>Avatarı Düzenle</Text>
+          <Text style={styles.blueText}>Chỉnh sửa avatar</Text>
 
-          <Text style={styles.blueText}>Kişisel bilgi ayarları</Text>
+          <Text style={styles.blueText}>Cài đặt thông tin cá nhân</Text>
         </View>
       </View>
     </SafeAreaView>

@@ -3,14 +3,15 @@ import { Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 
 import styles from './AccountComponents.style';
+import { AuthContext } from '../../views/context/AuthContext';
 
 const Bio = ({ route }) => {
   const navigation = useNavigation();
-
+  const { userProfile } = React.useContext(AuthContext)
   return (
     <SafeAreaView>
       <View style={styles.bioContainer}>
-        <Text style={styles.userName}> {route ? route.name : 'CEYLAN'}</Text>
+        <Text style={styles.userName}> {userProfile?.fullname}</Text>
         <Text style={styles.bio}>
           {route ? route.bio : 'Trang cá nhân'}
         </Text>
@@ -25,8 +26,8 @@ const Bio = ({ route }) => {
         <TouchableOpacity
           style={styles.edit}
           onPress={() => navigation.navigate('EditProfile')}>
-          <View style={{alignItems: 'center'}}>
-            <Text style={styles.editText}>Profili Düzenle</Text>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.editText}>Chỉnh sửa trang cá nhân</Text>
           </View>
         </TouchableOpacity>
 

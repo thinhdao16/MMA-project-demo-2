@@ -1,9 +1,9 @@
 import React from 'react';
-import {Image} from 'react-native';
-import {Avatar} from 'react-native-paper';
+import { Image, TouchableOpacity } from 'react-native';
+import { Avatar } from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
 import Foundation from 'react-native-vector-icons/Foundation';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Discover from '../views/Discover/Discover';
 import Search from '../views/Search/Search';
@@ -17,18 +17,21 @@ import { AuthContext } from '../views/context/AuthContext';
 const Tab = createBottomTabNavigator();
 
 const BottomTab = () => {
-  const {userProfile} = React.useContext(AuthContext)
+  const { userProfile } = React.useContext(AuthContext)
+  const handlePlusPoint = async ()=>{
+    console.log("first")
+  }
   return (
     <Tab.Navigator
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused}) => {
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused }) => {
           if (route.name === 'HomeScreen') {
             return focused ? (
               <Foundation name="home" size={32} color="white" />
             ) : (
               <Image
                 source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
-                style={{width: 25, height: 25}}
+                style={{ width: 25, height: 25 }}
               />
             );
           }
@@ -37,10 +40,13 @@ const BottomTab = () => {
           }
           if (route.name === 'Discover') {
             return (
-              <Image
-                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
-                style={{width: 25, height: 25}}
-              />
+              // <TouchableOpacity onPress={handlePlusPoint}>
+                <Image
+                  source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
+                  style={{ width: 25, height: 25 }}
+                />
+              // </TouchableOpacity>
+
             );
           }
           if (route.name === 'StoreScreen') {
@@ -55,7 +61,7 @@ const BottomTab = () => {
             );
           }
         },
-        tabBarStyle: {backgroundColor: 'black'},
+        tabBarStyle: { backgroundColor: 'black' },
         tabBarShowLabel: false,
         headerShown: false,
       })}>

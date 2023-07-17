@@ -9,6 +9,7 @@ import {
   View,
   Alert,
   TextInput,
+  ToastAndroid,
 } from 'react-native';
 import BottomSheet from 'react-native-gesture-bottom-sheet';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -17,6 +18,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as FileSystem from 'expo-file-system';
 import Feather from 'react-native-vector-icons/Feather';
+import SelectDropdown from 'react-native-select-dropdown'
 
 import Container from '../../components/Container/Container';
 import SearchBar from '../../components/SearchBar/SearchBar';
@@ -28,6 +30,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
+
+const countries = ["recieve", "give"]
 
 const TopLabel = () => {
   const bottomSheet = useRef();
@@ -81,9 +85,10 @@ const TopLabel = () => {
 const Store = () => {
   const [imageUri, setImageUri] = useState(null);
   const [token, setToken] = useState(null); // Trạng thái token
-  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const {fetchAllData} = React.useContext(AuthContext)
+  const [typePost, setTypePost] = useState('')
+  const [point, setPoint] = useState('')
+  const { fetchAllData } = React.useContext(AuthContext)
   useEffect(() => {
     getPermissions();
   }, []);
@@ -132,9 +137,9 @@ const Store = () => {
         type: 'image/jpeg',
         name: 'image.jpg',
       });
-
       formData.append('description', description);
-      formData.append('title', title);
+      formData.append('type', typePost)
+      formData.append('point',point)
       try {
         const response = await axios.post(
           'https://trading-stuff-be-iphg.vercel.app/post/create',
@@ -148,6 +153,7 @@ const Store = () => {
         );
 
         console.log('Gửi ảnh lên server thành công:', response.data);
+        ToastAndroid.show('Đăng bài thành công!', ToastAndroid.SHORT);
         fetchAllData(dataToken.accessToken)
       } catch (error) {
         console.error('Lỗi khi gửi ảnh lên server:', error);
@@ -187,30 +193,16 @@ const Store = () => {
               </>
             ) : (
               <>
-                <Image
-                  source={{ uri: imageUri }}
-                  style={{
-                    width: 300,
-                    height: 300,
-                    borderRadius: 15,
-
-                  }}
-                />
-                <View>
-                  <TextInput
-                    value={title}
-                    onChangeText={setTitle}
-                    placeholder="Input title"
-                    placeholderTextColor="grey"
-                    style={styles.textInput}
+                <TouchableOpacity onPress={pickImage}>
+                  <Image
+                    source={{ uri: imageUri }}
+                    style={{
+                      width: 300,
+                      height: 300,
+                      borderRadius: 15,
+                    }}
                   />
-                  <Feather
-                    name="type"
-                    size={20}
-                    color="white"
-                    style={styles.iconInput}
-                  />
-                </View>
+                </TouchableOpacity>
                 <View>
                   <TextInput
                     value={description}
@@ -226,7 +218,39 @@ const Store = () => {
                     style={styles.iconInput}
                   />
                 </View>
-
+                <View>
+                  <TextInput
+                    value={point}
+                    onChangeText={setPoint}
+                    placeholder="Input point"
+                    placeholderTextColor="grey"
+                    style={styles.textInput}
+                  />
+                  <Feather
+                    name="file-text"
+                    size={20}
+                    color="white"
+                    style={styles.iconInput}
+                  />
+                </View>
+                <View>
+                  <SelectDropdown
+                    data={countries}
+                    onSelect={(selectedItem, index) => {
+                      setTypePost(selectedItem)
+                    }}
+                    buttonTextAfterSelection={(selectedItem, index) => {
+                      // text represented after item is selected
+                      // if data array is an array of objects then return selectedItem.property to render after item is selected
+                      return selectedItem
+                    }}
+                    rowTextForSelection={(item, index) => {
+                      // text represented for each item in dropdown
+                      // if data array is an array of objects then return item.property to represent item in dropdown
+                      return item
+                    }}
+                  />
+                </View>
                 <TouchableOpacity
                   onPress={handleUploadImage}
                   style={styles.btnSubmit}

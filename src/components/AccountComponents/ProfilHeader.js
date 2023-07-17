@@ -4,7 +4,6 @@ import { AuthContext } from '../../views/context/AuthContext';
 const defaultImage = { uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' };
 const ProfileHeader = ({ route }) => {
   const{userProfile,postingPush} = React.useContext(AuthContext)
-  console.log(postingPush)
   return (
     <View style={styles.container3}>
       <View>

@@ -50,6 +50,9 @@ export function AuthContextProvider({ children }) {
             if (!responseLike.ok) {
                 throw new Error(`HTTP error! Status: ${responseLike.status}`);
             }
+            if (!responseProfle.ok) {
+                throw new Error(`HTTP error! Status: ${responseLike.status}`);
+            }
             const responseData = await response.json();
             const responseDataCmt = await responseCmt.json();
             const responseDataLike = await responseLike.json()
@@ -58,6 +61,7 @@ export function AuthContextProvider({ children }) {
             setAllCmt(responseDataCmt.data.postingComments);
             setIsLiked(responseDataLike.data.favourite);
             setUserProfile(responseDataProfile)
+            console.log(accessToken)
         } catch (error) {
             console.error(error);
         }
