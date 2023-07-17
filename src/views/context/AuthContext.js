@@ -14,7 +14,7 @@ export function AuthContextProvider({ children }) {
     const [reloadUserProfile, setReloadUserProfile] = useState(null);
     const [postingPush, setPostingPush] = useState([]);
     const [singlePage, setSinglePage] = useState([]);
-    const [accessToken ,setAccessToken] = useState([]);
+    const [accessToken, setAccessToken] = useState([]);
     //data global
 
     const fetchAllData = async (accessToken) => {
@@ -35,37 +35,45 @@ export function AuthContextProvider({ children }) {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            const responseProfle = await fetch("https://trading-stuff-be-iphg.vercel.app/user/me", {
+            const responseProfile = await fetch("https://trading-stuff-be-iphg.vercel.app/user/me", {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+
+            if (response.ok) {
+                const responseData = await response.json();
+                setPostingPush(responseData.data.posts);
+            } else {
+                console.error(`HTTP error Post! Status: ${response.status}`);
             }
-            if (!responseCmt.ok) {
-                throw new Error(`HTTP error! Status: ${responseCmt.status}`);
+
+            if (responseCmt.ok) {
+                const responseDataCmt = await responseCmt.json();
+                setAllCmt(responseDataCmt.data.postingComments);
+            } else {
+                console.error(`HTTP error Comment! Status: ${responseCmt.status}`);
             }
-            if (!responseLike.ok) {
-                throw new Error(`HTTP error! Status: ${responseLike.status}`);
+
+            if (responseLike.ok) {
+                const responseDataLike = await responseLike.json();
+                setIsLiked(responseDataLike.data.favourite);
+            } else {
+                console.error(`HTTP error Like! Status: ${responseLike.status}`);
             }
-            if (!responseProfle.ok) {
-                throw new Error(`HTTP error! Status: ${responseLike.status}`);
+
+            if (responseProfile.ok) {
+                const responseDataProfile = await responseProfile.json();
+                setUserProfile(responseDataProfile);
+            } else {
+                console.error(`HTTP error Profile! Status: ${responseProfile.status}`);
             }
-            const responseData = await response.json();
-            const responseDataCmt = await responseCmt.json();
-            const responseDataLike = await responseLike.json()
-            const responseDataProfile = await responseProfle.json()
-            setPostingPush(responseData.data.posts);
-            setAllCmt(responseDataCmt.data.postingComments);
-            setIsLiked(responseDataLike.data.favourite);
-            setUserProfile(responseDataProfile)
-            console.log(accessToken)
+
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
 
 
@@ -74,7 +82,7 @@ export function AuthContextProvider({ children }) {
         <AuthContext.Provider
             value={{
                 postingPush, setPostingPush, allCmt, setAllCmt, fetchAllData,
-                singlePage, setSinglePage,isLiked, setIsLiked,accessToken ,setAccessToken,userProfile, setUserProfile
+                singlePage, setSinglePage, isLiked, setIsLiked, accessToken, setAccessToken, userProfile, setUserProfile
             }}
         >
             {children}

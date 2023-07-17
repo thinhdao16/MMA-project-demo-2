@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   top: {
     flexDirection: 'row',
@@ -17,8 +17,8 @@ export default StyleSheet.create({
     margin: 10,
   },
   profilImage: {
-    width: 30,
-    height: 30,
+    width: 33,
+    height: 33,
     borderRadius: 100,
     marginRight: 10,
     marginLeft: 7,
@@ -32,13 +32,21 @@ export default StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 13,
     color: 'white',
+    marginTop:-10
+  },
+  pointPost: {
+    fontWeight: '300',
+    fontSize: 13,
+    color: 'white',
+    marginTop : -25,
+    marginLeft:59
   },
   ımage: {
     width: '100%',
     height: 370,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
   leftIcon: {
     flexDirection: 'row',
@@ -49,7 +57,7 @@ export default StyleSheet.create({
   ıconContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 15,
+    marginTop: 0,
   },
 
   likeText: {
@@ -131,7 +139,7 @@ export default StyleSheet.create({
     width: 150,
     resizeMode: 'contain',
     margin: 5,
-    alignItems: 'center',
+    // alignItems: 'center',
     marginLeft: -5,
   },
   iconContainer: {
@@ -143,7 +151,7 @@ export default StyleSheet.create({
   },
   logoContainer: {
     marginTop: 5,
-    marginLeft: 5,
+    marginLeft: -30,
   },
   input: {
     backgroundColor: '#363636',
@@ -168,17 +176,16 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 13,
   },
-  image_bank:{
+  image_bank: {
     height: 340,
-    width: 250,
-    resizeMode: 'cover',
+    width: 340,
+    resizeMode: 'contain',
     margin: 5,
     alignItems: 'center',
-    marginLeft: -5,
-    borderRadius:15,
+    borderRadius: 20,
   },
   textInput: {
-    backgroundColor: '#262626',
+    backgroundColor: 'black',
     height: 40,
     margin: 10,
     borderRadius: 10,
@@ -188,7 +195,7 @@ export default StyleSheet.create({
     fontSize: 18,
     color: 'white',
     marginHorizontal: 15,
-    width: 300,
+    width: 340,
   },
   iconInput: {
     margin: 10,
@@ -197,11 +204,11 @@ export default StyleSheet.create({
     position: 'absolute',
   },
   btnImage: {
-    backgroundColor: '#1877f2',
+    backgroundColor: '#445de2',
     height: 32,
     margin: 10,
     marginTop: 15,
-    borderRadius: 10,
+    borderRadius: 25,
     fontSize: 18,
     alignItems: 'center',
     justifyContent: 'center',
@@ -214,4 +221,29 @@ export default StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
   },
+  btnImagePost: {
+    backgroundColor: '#445de2',
+    height: 50,
+    margin: 10,
+    marginTop: 15,
+    borderRadius: 25,
+    fontSize: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 15,
+    marginBottom: 30,
+    width: 340
+  },
+  line: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'white',
+  },
+  iconPointPostPlus: {
+    fontSize: 20,
+    color: "#48cb61",
+  },
+  iconPointPostMinus: {
+    fontSize: 20,
+    color: "#ff0000",
+  }
 });

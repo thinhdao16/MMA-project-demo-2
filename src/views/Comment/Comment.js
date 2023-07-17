@@ -16,7 +16,9 @@ import data from '../../storage/database/comment';
 
 import styles from './Comment.style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 const Comment = ({ navigation, route }) => {
+  console.log(route.params.idPost)
   const [commentText, setCommentText] = useState('');
   const handleUploadImage = async () => {
     const accessToken = await AsyncStorage.getItem('Access_Token');
@@ -28,11 +30,14 @@ const Comment = ({ navigation, route }) => {
     try {
       const response = await axios.post(
         'https://trading-stuff-be-iphg.vercel.app/comment/create',
-        formData,
+        {
+          description: commentText,
+          post: route.params.idPost
+        },
         {
           headers: {
             Authorization: `Bearer ${dataToken.accessToken}`,
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -137,7 +142,7 @@ const Comment = ({ navigation, route }) => {
             {!commentText.length ? (
               <Text style={{ color: '#254253', marginRight: 15 }}>Chia sẻ</Text>
             ) : (
-              <Text style={{ color: '#0096fd', marginRight: 15 }}onPress = {handleUploadImage}>Chia sẻ</Text>
+              <Text style={{ color: '#0096fd', marginRight: 15 }} onPress={handleUploadImage}>Chia sẻ</Text>
             )}
           </View>
         </View>

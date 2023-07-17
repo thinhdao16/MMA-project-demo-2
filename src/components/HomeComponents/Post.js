@@ -27,7 +27,6 @@ const Post = () => {
   const [like, setLike] = useState([]);
   const bottomSheet = useRef();
   const { postingPush, setPostingPush, allCmt, isLiked, setIsLiked, accessToken, fetchAllData } = React.useContext(AuthContext)
-console.log(postingPush[0])
   const renderItem = ({ item }) => {
     return (
       <View>
@@ -49,7 +48,18 @@ console.log(postingPush[0])
       // Gửi dữ liệu lên server
       sendDataToServer();
     } else {
-      Alert.alert('Xác nhận', 'Bạn có chắc chắn muốn gửi dữ liệu lên server?', [
+      Alert.alert('Xác nhận', 'Bạn có chắc chắn muốn không', [
+        { text: 'Hủy', style: 'cancel' },
+        { text: 'Xác nhận', onPress: () => setIsConfirmed(true) },
+      ]);
+    }
+  };
+  const handleReport = () => {
+    if (isConfirmed) {
+      // Gửi dữ liệu lên server
+      sendDataToServer();
+    } else {
+      Alert.alert('Xác nhận', 'Bạn có chắc chắn muốn không', [
         { text: 'Hủy', style: 'cancel' },
         { text: 'Xác nhận', onPress: () => setIsConfirmed(true) },
       ]);
@@ -61,7 +71,7 @@ console.log(postingPush[0])
     // Code xử lý gửi dữ liệu
     console.log('Gửi dữ liệu lên server');
   };
-  const handleLike = async ( id) => {
+  const handleLike = async (id) => {
     console.log(id)
     axios
       .post(
@@ -112,16 +122,19 @@ console.log(postingPush[0])
             return (
               <View key={index} style={{ marginBottom: 10 }}>
                 {/* user */}
-                <View style={styles.top}>
-                  <View style={styles.topleft}>
-                    <Image source={{ uri: data?.userPosting?.img }} style={styles.profilImage} />
-                    <Text style={styles.title}>{data?.userPosting?.fullname}</Text>
+                <View style={{ marginBottom: 5 }}>
+                  <View style={styles.top}>
+                    <View style={styles.topleft}>
+                      <Image source={{ uri: data?.user?.img }} style={styles.profilImage} />
+                      <Text style={styles.title}>{data?.user?.fullname}</Text>
+                    </View>
+                    <TouchableOpacity onPress={handleReport} style={{ alignSelf: 'center', marginRight: 15 }}>
+                      <Feather name="more-vertical" size={20} color="#F5F5F5" />
+                    </TouchableOpacity>
                   </View>
-
-                  <TouchableOpacity style={{ alignSelf: 'center', marginRight: 15 }}>
-                    <Feather name="more-vertical" size={20} color="#F5F5F5" />
-                  </TouchableOpacity>
+                  <Text style={styles.pointPost}>{data?.typePost}</Text>
                 </View>
+
                 {/*img post*/}
                 <View style={{ height: 400 }}>
                   <DoubleTap doubleTap={() => handleLike(data?._id)}>
@@ -143,7 +156,7 @@ console.log(postingPush[0])
                             (f) => f?.user?._id === accessToken?.user?.id
                           )?.length > 0
                           ? handleDisLike(event, data?._id)
-                          : handleLike( data?._id)
+                          : handleLike(data?._id)
                       }>
                       <AntDesign
                         name={isLiked
@@ -168,8 +181,8 @@ console.log(postingPush[0])
                           {
                             allCmt: allCmt?.filter?.((cmt) => cmt?.posting?._id === data?._id),
                             idPost: data?._id,
-                            image: data?.userPosting?.img,
-                            user: data?.userPosting?.fullname,
+                            image: data?.user?.img,
+                            user: data?.user?.fullname,
                             explanation: data?.description,
                           },
                         })
@@ -244,8 +257,14 @@ console.log(postingPush[0])
                   </BottomSheet>
                   <View>
                     <TouchableOpacity onPress={handlePress}>
-                      <View style={{ marginRight: 20 }}>
-                        <FontAwesome name="bookmark-o" size={24} color="white" />
+                      <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 20 }}>
+                        <Text style={{ color: 'white' }}>{data?.point}</Text>
+                        {data?.typePost === "recieve" && (
+                          <AntDesign name="plus" color="#48cb61" size={18} />
+                        )}
+                        {data?.typePost === "give" && (
+                          <AntDesign name="minus" color="#ff0000" size={18} />
+                        )}
                       </View>
                     </TouchableOpacity>
                   </View>
@@ -269,8 +288,8 @@ console.log(postingPush[0])
                     params:
                     {
                       allCmt: allCmt?.filter?.((cmt) => cmt?.posting?._id === data?._id),
-                      image: data?.userPosting?.img,
-                      user: data?.userPosting?.fullname,
+                      image: data?.user?.img,
+                      user: data?.user?.fullname,
                       explanation: data?.description,
                     },
                   })
@@ -283,7 +302,7 @@ console.log(postingPush[0])
                     alignItems: 'center',
                   }}>
                   <Image
-                    source={{ uri: data?.userPosting?.img }}
+                    source={{ uri: data?.user?.img }}
                     style={styles?.profilImageComment}
                   />
                   <Text style={{ opacity: 0.8, color: 'grey' }} onPress={() =>
@@ -292,8 +311,8 @@ console.log(postingPush[0])
                       params:
                       {
                         allCmt: allCmt?.filter?.((cmt) => cmt?.posting?._id === data?._id),
-                        image: data?.userPosting?.img,
-                        user: data?.userPosting?.fullname,
+                        image: data?.user?.img,
+                        user: data?.user?.fullname,
                         explanation: data?.description,
                       },
                     })
