@@ -24,7 +24,7 @@ const Message = ({ navigation }) => {
           <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
             <Ionicons name="chevron-back" size={32} color="white" />
           </TouchableWithoutFeedback>
-          <Text style={styles.userName}>ezgiceylan</Text>
+          <Text style={styles.userName}>Quay lại</Text>
         </View>
         <Feather
           name="edit"

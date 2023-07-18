@@ -2,13 +2,13 @@ const comment = [
   {
     id: 1,
     image: { uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' },
-    comment: 'Gerçekten mükemmel',
+    comment: 'Thực sự hoàn hảo',
     user: 'ezgiceylan',
   },
   {
     id: 2,
     image: { uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' },
-    comment: 'Heyecanlı',
+    comment: 'Hào hứng',
     user: 'burakczn',
   },
   {

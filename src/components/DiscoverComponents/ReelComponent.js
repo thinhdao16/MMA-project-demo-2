@@ -110,7 +110,7 @@ const Left = ({ item }) => {
         />
         <Text style={styles.soundText}>{item.user}</Text>
         <Entypo name="dot-single" size={15} color="white" />
-        <Text style={styles.soundText}>Orjinal Ses İçeriği</Text>
+        <Text style={styles.soundText}>Nội dung âm thanh gốc</Text>
       </View>
     </View>
   );

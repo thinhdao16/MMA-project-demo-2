@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 import Container from '../../components/Container/Container';
 import SearchBar from '../../components/SearchBar/SearchBar';
@@ -36,7 +36,7 @@ const Settings = () => {
     try {
       // Clear the local storage
       await AsyncStorage.removeItem('Access_Token');
-      
+
       // Navigate to the login screen
       navigation.navigate('Login');
     } catch (error) {
@@ -45,23 +45,23 @@ const Settings = () => {
     }
   };
   return (
-    <Container insets={{top: true}}>
+    <Container insets={{ top: true }}>
       <View style={styles.topHeader}>
         <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={32} color="white" />
         </TouchableWithoutFeedback>
-        <Text style={styles.headerText}>Ayarlar</Text>
+        <Text style={styles.headerText}>Cài đặt</Text>
       </View>
       <SearchBar />
       <ScrollView>
         <SettingComponent />
 
-        <View style={{flexDirection: 'row', marginTop: 30, marginBottom: 5}}>
+        <View style={{ flexDirection: 'row', marginTop: 30, marginBottom: 5 }}>
           <Image
             source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
-            style={{marginLeft: 10, width: 20, height: 20}}
+            style={{ marginLeft: 10, width: 20, height: 20 }}
           />
-          <Text style={{color: 'white', fontSize: 18, marginLeft: 5}}>
+          <Text style={{ color: 'white', fontSize: 18, marginLeft: 5 }}>
             Meta
           </Text>
         </View>
@@ -73,22 +73,22 @@ const Settings = () => {
             marginBottom: 15,
             fontWeight: '500',
           }}>
-          Hesaplar Merkezi
+          Trung tâm tài khoản
         </Text>
 
         <Text style={styles.p}>
-          Hikaye ve gönderi paylaşımı ve giriş yapma dahil
+          Bao gồm chia sẻ câu chuyện và bài đăng và đăng nhập.
         </Text>
-        <Text style={styles.p}>Instagram,Facebook uygulaması ve Messenger</Text>
+        <Text style={styles.p}>Ứng dụng Instagram, Facebook và Messenger.</Text>
         <Text style={styles.p}>
-          arasındaki bağlantılı deneyimler için ayarları kontrol et.
+          Kiểm tra cài đặt để có trải nghiệm được kết nối giữa.
         </Text>
-        <View style={{marginTop: 30}}>
-          <Text style={styles.entry}>Girişler</Text>
-          <Text style={styles.blueText}>Hesap Ekle veya Değiştir</Text>
+        <View style={{ marginTop: 30 }}>
+          <Text style={styles.entry}>Mục</Text>
+          <Text style={styles.blueText}>Thêm hoặc Thay đổi Tài khoản.</Text>
           <TouchableWithoutFeedback
             onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.blueText}>ezgiceylan'dan Çıkış Yap</Text>
+            <Text style={styles.blueText}>Đăng xuất khỏi ezgiceylan</Text>
           </TouchableWithoutFeedback>
           <Text style={styles.blueText} onPress={handleLogout}>Đăng xuất</Text>
         </View>
