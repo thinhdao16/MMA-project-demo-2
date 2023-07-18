@@ -1,12 +1,11 @@
-import React, { createContext, useEffect, useState } from 'react';
-import { auth } from '../context/firebase';
-import axios from 'axios';
+import React, { createContext, useEffect, useState } from "react";
+import { auth } from "../context/firebase";
+import axios from "axios";
 // import { DataContext } from '../../pages/DataContext';
 
 export const AuthContext = createContext();
 
 export function AuthContextProvider({ children }) {
-
     const [allCmt, setAllCmt] = useState([]);
     const [isLiked, setIsLiked] = useState([]);
     const [point, setPoint] = useState([]);
@@ -18,39 +17,60 @@ export function AuthContextProvider({ children }) {
     const [postingPushHidden, setPostingPushHidden] = useState([]);
     const [postingPushPublished, setPostingPushPublished] = useState([]);
     const [postingPushLimited, setPostingPushLimited] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     //data global
 
     const fetchAllData = async (accessToken) => {
         try {
-            const response = await fetch('https://trading-stuff-be-iphg.vercel.app/post', {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-            const responseCmt = await fetch('https://trading-stuff-be-iphg.vercel.app/comment', {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-            const responseLike = await fetch("https://trading-stuff-be-iphg.vercel.app/favourite", {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-            const responseProfile = await fetch("https://trading-stuff-be-iphg.vercel.app/user/me", {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
+            setIsLoading(true); // Bắt đầu quá trình tải dữ liệu
+console.log("do")
+            const response = await fetch(
+                "https://trading-stuff-be-iphg.vercel.app/post",
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            const responseCmt = await fetch(
+                "https://trading-stuff-be-iphg.vercel.app/comment",
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            const responseLike = await fetch(
+                "https://trading-stuff-be-iphg.vercel.app/favourite",
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            const responseProfile = await fetch(
+                "https://trading-stuff-be-iphg.vercel.app/user/me",
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
 
             if (response.ok) {
                 const responseData = await response.json();
                 setPostingPush(responseData.data.posts);
-                setPostingPushHidden(responseData.data.posts?.filter((post) => post.status === "hidden"))
-                setPostingPushPublished(responseData.data.posts?.filter((post) => post.status === "published"))
-                setPostingPushLimited(responseData.data.posts?.filter((post) => post.status === "limited"))
+                setPostingPushHidden(
+                    responseData.data.posts?.filter((post) => post.status === "hidden")
+                );
+                setPostingPushPublished(
+                    responseData.data.posts?.filter((post) => post.status === "published")
+                );
+                setPostingPushLimited(
+                    responseData.data.posts?.filter((post) => post.status === "limited")
+                );
             } else {
                 console.error(`HTTP error Post! Status: ${response.status}`);
             }
@@ -75,21 +95,38 @@ export function AuthContextProvider({ children }) {
             } else {
                 console.error(`HTTP error Profile! Status: ${responseProfile.status}`);
             }
-
         } catch (error) {
             console.error(error);
+        } finally {
+            setIsLoading(false); // Kết thúc quá trình tải dữ liệu
         }
     };
-
-
 
 
     return (
         <AuthContext.Provider
             value={{
-                postingPush, setPostingPush, allCmt, setAllCmt, fetchAllData,
-                singlePage, setSinglePage, isLiked, setIsLiked, accessToken, setAccessToken, userProfile, setUserProfile,
-                postingPushHidden, setPostingPushHidden, postingPushPublished, setPostingPushPublished, postingPushLimited, setPostingPushLimited
+                postingPush,
+                setPostingPush,
+                allCmt,
+                setAllCmt,
+                fetchAllData,
+                singlePage,
+                setSinglePage,
+                isLiked,
+                setIsLiked,
+                accessToken,
+                setAccessToken,
+                userProfile,
+                setUserProfile,
+                postingPushHidden,
+                setPostingPushHidden,
+                postingPushPublished,
+                setPostingPushPublished,
+                postingPushLimited,
+                setPostingPushLimited,
+                isLoading,
+                setIsLoading,
             }}
         >
             {children}

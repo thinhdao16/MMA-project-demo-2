@@ -83,12 +83,37 @@ const TopLabel = () => {
 };
 
 const Store = () => {
+  const { fetchAllData, userProfile, } = React.useContext(AuthContext)
+
   const [imageUri, setImageUri] = useState(null);
   const [token, setToken] = useState(null); // Trạng thái token
   const [description, setDescription] = useState('');
   const [typePost, setTypePost] = useState('')
-  const [point, setPoint] = useState('')
-  const { fetchAllData } = React.useContext(AuthContext)
+  const [point, setPoint] = useState("");
+
+  const [isTypePostEmpty, setIsTypePostEmpty] = useState(true);
+
+  const handlePointChange = (text) => {
+    if (isTypePostEmpty) {
+      // Hiển thị thông báo khi nhập số trong trường hợp typePost rỗng
+      Alert.alert("Thông báo", "Vui lòng chọn loại bài đăng trước khi nhập số");
+      setPoint("");
+      return;
+    }
+
+    const numericValue = parseInt(text);
+    if (!isNaN(numericValue)) {
+      const limitedValue = typePost === "give" ? Math.min(numericValue, userProfile?.point) : numericValue;
+      setPoint(limitedValue.toString());
+    }
+  };
+
+  // Cập nhật trạng thái isTypePostEmpty khi typePost thay đổi
+  useEffect(() => {
+    setIsTypePostEmpty(typePost === "");
+  }, [typePost]);
+
+
   useEffect(() => {
     getPermissions();
   }, []);
@@ -168,16 +193,9 @@ const Store = () => {
       <TopLabel />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-
-            }}
-          >
-            {!imageUri ? (
-              <>
+          {!imageUri ? (
+            <>
+              <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
                 <Image
                   source={{ uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUzGzTj0c4Gy2R6Gl856kAX1RiOxu38P9C8w&usqp=CAU" }}
                   style={{
@@ -190,55 +208,53 @@ const Store = () => {
                 <TouchableOpacity style={styles.btnImage} onPress={pickImage}>
                   <Text style={styles.imagesText}>Chọn từ máy bạn</Text>
                 </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <TouchableOpacity onPress={pickImage}>
-                  <Image
-                    source={{ uri: imageUri }}
-                    style={{
-                      width: 300,
-                      height: 300,
-                      borderRadius: 15,
-                    }}
-                  />
-                </TouchableOpacity>
-                <View>
-                  <TextInput
-                    value={description}
-                    onChangeText={setDescription}
-                    placeholder="Input description"
-                    placeholderTextColor="grey"
-                    style={styles.textInput}
-                  />
-                  <Feather
-                    name="file-text"
-                    size={20}
-                    color="white"
-                    style={styles.iconInput}
-                  />
-                </View>
-                <View>
-
-                  <TextInput
-                    value={point}
-                    onChangeText={setPoint}
-                    placeholder="Input point"
-                    placeholderTextColor="grey"
-                    style={styles.textInput}
-                  />
-                  <Feather
-                    name="file-text"
-                    size={20}
-                    color="white"
-                    style={styles.iconInput}
-                  />
-                </View>
-                <View>
+              </View>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity onPress={pickImage} style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center', marginBottom: 15
+              }}>
+                <Image
+                  source={{ uri: imageUri }}
+                  style={{
+                    width: 380,
+                    height: 380,
+                    borderRadius: 15,
+                  }}
+                />
+              </TouchableOpacity>
+              <View>
+                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18, }}>Description :</Text>
+              </View>
+              <View>
+                <TextInput
+                  value={description}
+                  onChangeText={setDescription}
+                  placeholder="Input description"
+                  placeholderTextColor="grey"
+                  style={styles.textInput}
+                />
+                <Feather
+                  name="file-text"
+                  size={20}
+                  color="white"
+                  style={styles.iconInput}
+                />
+              </View>
+              <View>
+                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18, marginBottom: 15 }}>TypePost :</Text>
+                <View style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
                   <SelectDropdown
                     data={countries}
                     onSelect={(selectedItem, index) => {
-                      setTypePost(selectedItem)
+                      setTypePost(selectedItem);
                     }}
                     buttonTextAfterSelection={(selectedItem, index) => {
                       return selectedItem;
@@ -246,19 +262,44 @@ const Store = () => {
                     rowTextForSelection={(item, index) => {
                       return item;
                     }}
-                    style={{ backgroundColor: 'blue' }} // Change the background color to blue
+                    dropdownStyle={{ borderRadius:15}}
                   />
 
                 </View>
+                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>Point :</Text>
+              </View>
+              <View>
+                <TextInput
+                  value={point}
+                  onChangeText={handlePointChange}
+                  placeholder="Input point"
+                  placeholderTextColor="grey"
+                  style={styles.textInput}
+                  keyboardType="numeric"
+                />
+                <Feather
+                  name="file-text"
+                  size={20}
+                  color="white"
+                  style={styles.iconInput}
+                />
+              </View>
+
+              <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
                 <TouchableOpacity
                   onPress={handleUploadImage}
                   style={styles.btnSubmit}
                 >
                   <Text style={styles.submit}>Gửi</Text>
                 </TouchableOpacity>
-              </>
-            )}
-          </View>
+              </View>
+
+            </>
+          )}
         </View>
       </ScrollView>
     </Container>

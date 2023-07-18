@@ -5,13 +5,14 @@ import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import data from '../../storage/database/search';
 import { AuthContext } from '../context/AuthContext';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const Search = () => {
   const navigation = useNavigation();
   const flatListRef = React.useRef(null);
   useScrollToTop(flatListRef);
   const { postingPush, setSinglePage } = React.useContext(AuthContext)
-  // console.log("first", postingPush[0])
+  const Tab = createBottomTabNavigator();
   const renderItem = ({ item, index }) => (
     <TouchableOpacity key={index} style={{ width: '33%', margin: 0.8 }} onPress={() => {
       setSinglePage(item);
@@ -34,8 +35,12 @@ const Search = () => {
         keyExtractor={(_item, index) => index.toString()}
         renderItem={renderItem}
         numColumns={3}
-        showsVerticalScrollIndicator={false}
+        showsVert
+        icalScrollIndicator={false}
       />
+      {/* <Tab.Navigator>
+        <Tab.Screen name="SingleSearch" component={SingleSearch} />
+      </Tab.Navigator> */}
     </SafeAreaView>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   Text,
@@ -19,7 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 const Comment = ({ navigation, route }) => {
-  const{fetchAllData, userProfile ,allCmt} = React.useContext(AuthContext)
+  const { fetchAllData, userProfile, allCmt, isLoading } = React.useContext(AuthContext)
 
   const commentData = allCmt?.filter((cmt) => cmt?.post?._id === route.params.idPost)
 
@@ -68,63 +69,66 @@ const Comment = ({ navigation, route }) => {
               <Feather name="send" size={24} color="white" />
             </View>
           </View>
-
-          <ScrollView>
-            <View style={styles.topComment}>
-              <Image style={styles.image} source={{ uri: route.params.image }} alt='https://cdn-icons-png.flaticon.com/512/1088/1088537.png' />
-              <View style={{ marginLeft: 10 }}>
-                <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                  {route.params.user}
-                </Text>
-                <Text style={{ color: 'white', marginTop: 7 }}>
-                  {route.params.explanation}
-                </Text>
+          {isLoading ? (
+            <ActivityIndicator size="large" color="white" />
+          ) : (
+            <ScrollView>
+              <View style={styles.topComment}>
+                <Image style={styles.image} source={{ uri: route.params.image }} alt='https://cdn-icons-png.flaticon.com/512/1088/1088537.png' />
+                <View style={{ marginLeft: 10 }}>
+                  <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                    {route.params.user}
+                  </Text>
+                  <Text style={{ color: 'white', marginTop: 7 }}>
+                    {route.params.explanation}
+                  </Text>
+                </View>
               </View>
-            </View>
 
-            <View style={styles.line} />
-            {commentData.map((data, index) => {
-              return (
-                <View
-                  key={index}
-                  style={{
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                  }}>
-                  <View style={styles.comment}>
-                    <Image style={styles.images} source={{ uri: data?.user?.img }} />
-                    <View style={{ marginLeft: 10 }}>
-                      <Text
-                        style={{
-                          color: 'white',
-                          fontWeight: 'bold',
-                          fontSize: 13,
-                        }}>
-                        {data?.user?.fullname}
-                      </Text>
-                      <Text
-                        style={{ color: 'white', marginTop: 5, fontSize: 15 }}>
-                        {data?.description}
-                      </Text>
-                      <View style={{ flexDirection: 'row', marginTop: 5 }}>
-                        <Text style={styles.answer}>Trả lời</Text>
-                        <Text style={styles.answer}>Gửi</Text>
+              <View style={styles.line} />
+              {commentData.map((data, index) => {
+                return (
+                  <View
+                    key={index}
+                    style={{
+                      justifyContent: 'space-between',
+                      flexDirection: 'row',
+                    }}>
+                    <View style={styles.comment}>
+                      <Image style={styles.images} source={{ uri: data?.user?.img }} />
+                      <View style={{ marginLeft: 10 }}>
+                        <Text
+                          style={{
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: 13,
+                          }}>
+                          {data?.user?.fullname}
+                        </Text>
+                        <Text
+                          style={{ color: 'white', marginTop: 5, fontSize: 15 }}>
+                          {data?.description}
+                        </Text>
+                        <View style={{ flexDirection: 'row', marginTop: 5 }}>
+                          <Text style={styles.answer}>Trả lời</Text>
+                          <Text style={styles.answer}>Gửi</Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
 
-                  <View
-                    style={{
-                      marginTop: 10,
-                      alignItems: 'center',
-                      marginRight: 20,
-                    }}>
-                    <EvilIcons name="heart" size={20} color="#aeaeae" />
+                    <View
+                      style={{
+                        marginTop: 10,
+                        alignItems: 'center',
+                        marginRight: 20,
+                      }}>
+                      <EvilIcons name="heart" size={20} color="#aeaeae" />
+                    </View>
                   </View>
-                </View>
-              );
-            })}
-          </ScrollView>
+                );
+              })}
+            </ScrollView>
+          )}
         </View>
 
         <View style={styles.bottom}>

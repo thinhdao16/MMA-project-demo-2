@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     marginHorizontal: 15,
-    width: 300,
+    width: 380,
   },
   iconInput: {
     margin: 10,
@@ -109,7 +109,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 15,
     marginBottom: 10,
-    width: 50
+    width: 50,
+    
   },
   submit: {
     color: 'black',

@@ -6,12 +6,9 @@ import { AuthContext } from '../context/AuthContext';
 
 const ProfilPost = ({ navigation }) => {
   const { postingPushPublished  , setSinglePage, userProfile } = React.useContext(AuthContext)
-  const [isImagePressed, setIsImagePressed] = React.useState(false);
   const flatListRef = React.useRef(null);
 
-  const handleImagePress = () => {
-    setIsImagePressed(true);
-  };
+
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
     style={{ width: '33%', margin: 0.8 }}

@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Account from '../views/Account/Account';
 import SinglePost from '../views/ProfilPost/SinglePost';
 import Settings from '../views/Settings/Settings';
-import SingleSearch from '../views/ProfilPost/SingleSearch';
+
 
 const AccountScreen = () => {
   const Stack = createNativeStackNavigator();
@@ -14,7 +14,7 @@ const AccountScreen = () => {
       <Stack.Screen name="Account" component={Account} />
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="SinglePost" component={SinglePost} />
-      <Stack.Screen name="SingleSearch" component={SingleSearch} />
+      
 
     </Stack.Navigator>
   );
