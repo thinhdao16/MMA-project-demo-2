@@ -5,7 +5,7 @@ import Container from '../../components/Container/Container';
 import { AuthContext } from '../context/AuthContext';
 
 const ProfilPost = ({ navigation }) => {
-  const { postingPush  , setSinglePage } = React.useContext(AuthContext)
+  const { postingPushPublished  , setSinglePage, userProfile } = React.useContext(AuthContext)
   const [isImagePressed, setIsImagePressed] = React.useState(false);
   const flatListRef = React.useRef(null);
 
@@ -32,7 +32,7 @@ const ProfilPost = ({ navigation }) => {
       <FlatList
         ref={flatListRef}
         horizontal={false}
-        data={postingPush}
+        data={postingPushPublished?.filter((post) => post?.user?._id === userProfile?._id)}
         keyExtractor={(_item, index) => index.toString()}
         renderItem={renderItem}
         numColumns={3}

@@ -15,6 +15,9 @@ export function AuthContextProvider({ children }) {
     const [postingPush, setPostingPush] = useState([]);
     const [singlePage, setSinglePage] = useState([]);
     const [accessToken, setAccessToken] = useState([]);
+    const [postingPushHidden, setPostingPushHidden] = useState([]);
+    const [postingPushPublished, setPostingPushPublished] = useState([]);
+    const [postingPushLimited, setPostingPushLimited] = useState([]);
     //data global
 
     const fetchAllData = async (accessToken) => {
@@ -45,6 +48,9 @@ export function AuthContextProvider({ children }) {
             if (response.ok) {
                 const responseData = await response.json();
                 setPostingPush(responseData.data.posts);
+                setPostingPushHidden(responseData.data.posts?.filter((post) => post.status === "hidden"))
+                setPostingPushPublished(responseData.data.posts?.filter((post) => post.status === "published"))
+                setPostingPushLimited(responseData.data.posts?.filter((post) => post.status === "limited"))
             } else {
                 console.error(`HTTP error Post! Status: ${response.status}`);
             }
@@ -58,7 +64,7 @@ export function AuthContextProvider({ children }) {
 
             if (responseLike.ok) {
                 const responseDataLike = await responseLike.json();
-                setIsLiked(responseDataLike.data.favourite);
+                setIsLiked(responseDataLike.data);
             } else {
                 console.error(`HTTP error Like! Status: ${responseLike.status}`);
             }
@@ -82,7 +88,8 @@ export function AuthContextProvider({ children }) {
         <AuthContext.Provider
             value={{
                 postingPush, setPostingPush, allCmt, setAllCmt, fetchAllData,
-                singlePage, setSinglePage, isLiked, setIsLiked, accessToken, setAccessToken, userProfile, setUserProfile
+                singlePage, setSinglePage, isLiked, setIsLiked, accessToken, setAccessToken, userProfile, setUserProfile,
+                postingPushHidden, setPostingPushHidden, postingPushPublished, setPostingPushPublished, postingPushLimited, setPostingPushLimited
             }}
         >
             {children}

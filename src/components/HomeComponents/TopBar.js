@@ -14,8 +14,7 @@ import axios from 'axios';
 const TopBar = () => {
 
   const navigation = useNavigation();
-  const { userProfile, accessToken } = React.useContext(AuthContext)
-
+  const { userProfile, accessToken, fetchAllData } = React.useContext(AuthContext)
   const [isModalVisible, setModalVisible] = React.useState(false);
   const [imageUri, setImageUri] = React.useState(null);
   const [content, setContent] = React.useState("")
@@ -69,10 +68,10 @@ const TopBar = () => {
         name: 'image.jpg',
       });
 
-      formData.append('description', content);
+      formData.append('point', content);
       try {
         const response = await axios.post(
-          'https://trading-stuff-be-iphg.vercel.app/post/create',
+          'https://trading-stuff-be-iphg.vercel.app/invoice/create',
           formData,
           {
             headers: {
@@ -82,9 +81,9 @@ const TopBar = () => {
           }
         );
 
-        console.log('Gửi ảnh lên server thành công:', response.data);
+        console.log('nap diem thành công:', response.data);
         ToastAndroid.show('Đăng bài thành công!', ToastAndroid.SHORT);
-        fetchAllData(dataToken.accessToken)
+        fetchAllData(accessToken.accessToken)
       } catch (error) {
         console.error('Lỗi khi gửi ảnh lên server:', error);
       }

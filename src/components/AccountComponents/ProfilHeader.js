@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import { AuthContext } from '../../views/context/AuthContext';
 const defaultImage = { uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' };
 const ProfileHeader = ({ route }) => {
-  const{userProfile,postingPush} = React.useContext(AuthContext)
+  const{userProfile,postingPushPublished} = React.useContext(AuthContext)
   return (
     <View style={styles.container3}>
       <View>
@@ -15,7 +15,7 @@ const ProfileHeader = ({ route }) => {
 
       <View style={styles.numbers}>
         <View style={styles.left}>
-          <Text style={styles.numberContainer}>{postingPush?.filter((post) => post?.user === userProfile?.id).length}</Text>
+          <Text style={styles.numberContainer}>{postingPushPublished?.filter((post) => post?.user?._id === userProfile?._id).length}</Text>
           <Text style={styles.text}>Bài viết</Text>
         </View>
 

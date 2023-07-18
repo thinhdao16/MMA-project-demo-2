@@ -31,7 +31,7 @@ import { AuthContext } from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
 
-const countries = ["recieve", "give"]
+const countries = ["receive", "give"]
 
 const TopLabel = () => {
   const bottomSheet = useRef();
@@ -139,7 +139,7 @@ const Store = () => {
       });
       formData.append('description', description);
       formData.append('type', typePost)
-      formData.append('point',point)
+      formData.append('point', point)
       try {
         const response = await axios.post(
           'https://trading-stuff-be-iphg.vercel.app/post/create',
@@ -219,6 +219,7 @@ const Store = () => {
                   />
                 </View>
                 <View>
+
                   <TextInput
                     value={point}
                     onChangeText={setPoint}
@@ -240,16 +241,14 @@ const Store = () => {
                       setTypePost(selectedItem)
                     }}
                     buttonTextAfterSelection={(selectedItem, index) => {
-                      // text represented after item is selected
-                      // if data array is an array of objects then return selectedItem.property to render after item is selected
-                      return selectedItem
+                      return selectedItem;
                     }}
                     rowTextForSelection={(item, index) => {
-                      // text represented for each item in dropdown
-                      // if data array is an array of objects then return item.property to represent item in dropdown
-                      return item
+                      return item;
                     }}
+                    style={{ backgroundColor: 'blue' }} // Change the background color to blue
                   />
+
                 </View>
                 <TouchableOpacity
                   onPress={handleUploadImage}

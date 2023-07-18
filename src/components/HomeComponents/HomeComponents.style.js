@@ -245,5 +245,13 @@ export default StyleSheet.create({
   iconPointPostMinus: {
     fontSize: 20,
     color: "#ff0000",
-  }
+  },
+  image_bank: {
+    height: 340,
+    width: 340,
+    resizeMode: 'contain',
+    margin: 5,
+    alignItems: 'center',
+    borderRadius: 20,
+  },
 });

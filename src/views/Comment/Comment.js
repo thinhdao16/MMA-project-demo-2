@@ -17,8 +17,12 @@ import data from '../../storage/database/comment';
 import styles from './Comment.style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 const Comment = ({ navigation, route }) => {
-  console.log(route.params.idPost)
+  const{fetchAllData, userProfile ,allCmt} = React.useContext(AuthContext)
+
+  const commentData = allCmt?.filter((cmt) => cmt?.post?._id === route.params.idPost)
+
   const [commentText, setCommentText] = useState('');
   const handleUploadImage = async () => {
     const accessToken = await AsyncStorage.getItem('Access_Token');
@@ -32,7 +36,7 @@ const Comment = ({ navigation, route }) => {
         'https://trading-stuff-be-iphg.vercel.app/comment/create',
         {
           description: commentText,
-          post: route.params.idPost
+          postId: route.params.idPost
         },
         {
           headers: {
@@ -41,7 +45,8 @@ const Comment = ({ navigation, route }) => {
           },
         }
       );
-      console.log('Gửi ảnh lên server thành công:', response.data);
+      fetchAllData(dataToken.accessToken)
+      console.log('Cmt lên server thành công:', response.data);
     } catch (error) {
       console.error('Lỗi khi gửi ảnh lên server:', error);
     }
@@ -78,7 +83,7 @@ const Comment = ({ navigation, route }) => {
             </View>
 
             <View style={styles.line} />
-            {route?.params?.allCmt.map((data, index) => {
+            {commentData.map((data, index) => {
               return (
                 <View
                   key={index}
@@ -87,7 +92,7 @@ const Comment = ({ navigation, route }) => {
                     flexDirection: 'row',
                   }}>
                   <View style={styles.comment}>
-                    <Image style={styles.images} source={{ uri: data?.userPostingComment?.img }} />
+                    <Image style={styles.images} source={{ uri: data?.user?.img }} />
                     <View style={{ marginLeft: 10 }}>
                       <Text
                         style={{
@@ -95,7 +100,7 @@ const Comment = ({ navigation, route }) => {
                           fontWeight: 'bold',
                           fontSize: 13,
                         }}>
-                        {data?.userPostingComment?.fullname}
+                        {data?.user?.fullname}
                       </Text>
                       <Text
                         style={{ color: 'white', marginTop: 5, fontSize: 15 }}>
@@ -126,10 +131,10 @@ const Comment = ({ navigation, route }) => {
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image
               style={styles.image}
-              source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
+              source={{ uri: userProfile?.img }}
             />
             <TextInput
-              placeholder={`Comment under the name ${route.params.user} ...`}
+              placeholder={`Comment under the name ${userProfile?.fullname} ...`}
               placeholderTextColor="#969696"
               style={styles.input}
               value={commentText}

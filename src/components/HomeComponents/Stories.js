@@ -12,8 +12,8 @@ import { AuthContext } from '../../views/context/AuthContext';
 
 const Stories = () => {
   const navigation = useNavigation();
-  const {postingPush} = React.useContext(AuthContext)
-    const filteredData = postingPush?.filter((item) => {
+  const {postingPushPublished} = React.useContext(AuthContext)
+    const filteredData = postingPushPublished?.filter((item) => {
       const updatedAt = moment(item.updatedAt);
       const now = moment();
   
@@ -60,15 +60,15 @@ const Stories = () => {
                       name: 'Story',
                       params: {
                         image: data?.img,
-                        name: data?.userPosting?.fullname,
-                        pp: data?.userPosting?.img,
+                        name: data?.user?.fullname,
+                        pp: data?.user?.img,
                         timeStory: data?.updatedAt,
                       },
                     });
               }}
               >
               <View style={styles.top2}>
-                {data.id === 1 ? (
+                {data?._id === 1 ? (
                   <View style={styles.myStory}>
                     <View style={styles.plusIcon}>
                       <AntDesign name="pluscircle" size={16} color="#0195f7" />

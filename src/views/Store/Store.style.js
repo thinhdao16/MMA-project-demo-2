@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   textInput: {
-    backgroundColor: '#262626',
+    backgroundColor: '#1c1c24',
     height: 40,
     margin: 10,
     borderRadius: 10,
