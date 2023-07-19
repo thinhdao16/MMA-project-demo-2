@@ -259,19 +259,21 @@ const Post = () => {
                               {data?.user?.fullname}
                             </Text>
                           </View>
-                          <TouchableOpacity
-                            key={data?._id}
-                            onPress={() => {
-                              toggleModalReport(data);
-                            }}
-                            style={{ alignSelf: "center", marginRight: 15 }}
-                          >
-                            <Feather
-                              name="more-vertical"
-                              size={20}
-                              color="#F5F5F5"
-                            />
-                          </TouchableOpacity>
+                          {data?.user._id === userProfile._id ? null : (
+                            <TouchableOpacity
+                              key={data?._id}
+                              onPress={() => {
+                                toggleModalReport(data);
+                              }}
+                              style={{ alignSelf: "center", marginRight: 15 }}
+                            >
+                              <Feather
+                                name="more-vertical"
+                                size={20}
+                                color="#F5F5F5"
+                              />
+                            </TouchableOpacity>
+                          )}
                         </View>
                         <Text style={styles.pointPost}>{data?.typePost}</Text>
                       </View>

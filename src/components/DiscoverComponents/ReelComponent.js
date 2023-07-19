@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import AnimatedLottieView from 'lottie-react-native';
-import { Dimensions, Image, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -10,37 +10,38 @@ import Video from 'react-native-video';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 import styles from './DiscoverComponents.style';
+import BottomModal from './BottomModal';
 
 const Reel = ({ item }) => {
   const ref = useRef(null);
 
   const bottomTabBarHeight = useBottomTabBarHeight();
   const insets = useSafeAreaInsets();
+  const additionalHeight = 24;
 
   const height =
-    Dimensions.get('window').height - bottomTabBarHeight - insets.top;
-
+    Dimensions.get('window').height - bottomTabBarHeight - insets.top - additionalHeight;
   return (
     <View
       style={{
         height: height,
         justifyContent: 'flex-end',
       }}>
-      {/* <Video
+      <Image
         videoRef={ref}
-        source={item.video}
+        source={item.image}
         resizeMode="cover"
         repeat={true}
         style={{ ...styles.video, height: height }}
         muted={true}
-      /> */}
+      />
 
       <View
         style={{
           zIndex: 1,
           flexDirection: 'row',
           justifyContent: 'space-between',
-          paddingBottom: 10,
+          paddingBottom: 20,
         }}>
         <Left item={item} />
         <Right item={item} />
@@ -50,7 +51,37 @@ const Reel = ({ item }) => {
 };
 const Right = ({ item }) => {
   const [like, setLike] = useState(item.islike);
+  const [modalVisible, setModalVisible] = useState(false);
 
+  const showModal = () => {
+    setModalVisible(true);
+  };
+
+  const hideModal = () => {
+    setModalVisible(false);
+  };
+  const styless = StyleSheet.create({
+    container: {
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      textAlign: 'center',
+    },
+    button: {
+      backgroundColor: 'blue',
+      padding: 10,
+      borderRadius: 5,
+      marginBottom: 20,
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: 16,
+    },
+    modalText: {
+      fontSize: 18,
+      textAlign: 'center',
+      color: "white"
+    },
+  });
   return (
     <View style={styles.right}>
       <TouchableOpacity onPress={() => setLike(!like)}>
@@ -61,8 +92,23 @@ const Right = ({ item }) => {
         />
       </TouchableOpacity>
       <Text style={styles.number}>{like ? item.likes + 1 : item.likes}</Text>
-      <Ionicons name="chatbubble-outline" size={32} color="white" />
-      <Text style={styles.number}>{item.comment}</Text>
+
+      <View style={styless.container}>
+        <TouchableOpacity onPress={showModal}>
+          <Ionicons name="chatbubble-outline" size={32} color="white" />
+          <Text style={styles.number}>{item.comment}</Text>
+        </TouchableOpacity>
+
+        <BottomModal visible={modalVisible} >
+          <ScrollView>
+            <TouchableOpacity activeOpacity={1} onPress={hideModal}>
+              <Text style={styless.modalText}>Close Modal</Text>
+            </TouchableOpacity>
+            <Text style={styless.modalText}>Hello, this is a modal content!</Text>
+          </ScrollView>
+        </BottomModal>
+
+      </View>
       <Feather name="send" size={28} color="white" style={styles.icons} />
       <Entypo
         name="dots-three-vertical"
