@@ -139,7 +139,7 @@ const Comment = ({ navigation, route }) => {
               source={{ uri: userProfile?.img }}
             />
             <TextInput
-              placeholder={`Comment under the name ${userProfile?.fullname} ...`}
+              placeholder={`Comment under the name you want ...`}
               placeholderTextColor="#969696"
               style={styles.input}
               value={commentText}

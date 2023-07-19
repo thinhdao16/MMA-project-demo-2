@@ -179,6 +179,10 @@ const Store = () => {
 
         console.log('Gửi ảnh lên server thành công:', response.data);
         ToastAndroid.show('Đăng bài thành công!', ToastAndroid.SHORT);
+        setImageUri(null)
+        setDescription("")
+        setTypePost("")
+        setPoint("")
         fetchAllData(dataToken.accessToken)
       } catch (error) {
         console.error('Lỗi khi gửi ảnh lên server:', error);
