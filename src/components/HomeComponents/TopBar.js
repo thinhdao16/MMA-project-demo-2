@@ -84,11 +84,11 @@ const TopBar = () => {
 
         console.log('nap diem thành công:', response.data);
         ToastAndroid.show('Đăng bài thành công!', ToastAndroid.SHORT);
-      fetchAllData(accessToken.accessToken)
-      setModalVisible(!isModalVisible);  
+        fetchAllData(accessToken.accessToken)
+        setModalVisible(!isModalVisible);
       } catch (error) {
         // console.error('Bạn còn hóa đơn đợi admin', error);
-      ToastAndroid.show("Bạn còn hóa đơn đợi admin", ToastAndroid.SHORT)
+        ToastAndroid.show("Bạn còn hóa đơn đợi admin", ToastAndroid.SHORT)
       }
     } else {
       Alert.alert('Lỗi', 'Vui lòng chọn ảnh trước khi gửi.');
@@ -132,8 +132,12 @@ const TopBar = () => {
               }
             })
           }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', padding: 10 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10 }}>
               <FontAwesome name="times-circle" size={40} color="white" onPress={toggleModal} />
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginRight: 12 }}>Nạp tiền</Text>
+              </View>
+              <View />
             </View>
 
             <View style={{ flex: 1, }}>
@@ -173,7 +177,7 @@ const TopBar = () => {
                   style={styles.iconInput}
                 />
               </View>
-              <View>
+              <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                 <Feather
                   name="file-text"
                   size={20}
@@ -184,6 +188,7 @@ const TopBar = () => {
                 />
                 <Text style={{ color: 'white' }}> 1đ = 1000vnđ</Text>
               </View>
+
               <View style={{ justifyContent: "center", alignItems: "center", marginTop: 15 }}>
                 {!imageUri ? (
                   <>

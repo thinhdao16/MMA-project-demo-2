@@ -171,28 +171,24 @@ const SingleSearch = () => {
     const seconds = duration.seconds();
     return (
         <Container insets={{ top: true, bottom: true }}>
-            <View
-                style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginLeft: 10,
-                    marginTop: 10,
-                }}
-            >
+            <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 10,
+                marginTop: 10,
+            }}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Ionicons name="chevron-back" size={28} color="white" />
                 </TouchableOpacity>
-                <Text
-                    style={{
-                        color: "white",
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={{
+                        color: 'white',
                         fontSize: 22,
-                        fontWeight: "bold",
+                        fontWeight: 'bold',
                         marginBottom: 7,
-                    }}
-                >
-                    {" "}
-                    Post
-                </Text>
+                        marginRight: 25,
+                    }}>Post</Text>
+                </View>
             </View>
             <View
                 style={{
