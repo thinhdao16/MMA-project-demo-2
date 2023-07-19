@@ -176,13 +176,18 @@ const SinglePost = () => {
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Ionicons name="chevron-back" size={28} color="white" />
                 </TouchableOpacity>
-                <Text style={{
-                    color: 'white',
-                    fontSize: 22,
-                    fontWeight: 'bold',
-                    marginBottom: 7
-                }}> Post</Text>
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={{
+                        color: 'white',
+                        fontSize: 22,
+                        fontWeight: 'bold',
+                        marginBottom: 7,
+                        marginRight: 25,
+                    }}>Post</Text>
+                </View>
             </View>
+
+
             <View style={{
                 borderBottomWidth: 0.5,
                 borderBottomColor: 'grey',

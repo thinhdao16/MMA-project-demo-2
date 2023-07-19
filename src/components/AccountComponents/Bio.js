@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import styles from './AccountComponents.style';
 import { AuthContext } from '../../views/context/AuthContext';
-
+import ScreenBill from './ScreenBill'
 const Bio = ({ route }) => {
   const navigation = useNavigation();
   const { userProfile } = React.useContext(AuthContext)
@@ -31,12 +31,16 @@ const Bio = ({ route }) => {
           </View>
         </TouchableOpacity>
 
-        <View style={styles.icon}>
+        <TouchableOpacity
+          style={styles.icon}
+          // onPress={handleIconPress}
+          onPress={() => navigation.navigate('ScreenBill')}
+        >
           <Image
             source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
             style={{ width: 16, height: 16 }}
           />
-        </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
