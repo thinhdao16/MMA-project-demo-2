@@ -103,7 +103,7 @@ const Store = () => {
 
     const numericValue = parseInt(text);
     if (!isNaN(numericValue)) {
-      const limitedValue = typePost === "give" ? Math.min(numericValue, userProfile?.point) : numericValue;
+      const limitedValue = typePost === "receive" ? Math.min(numericValue, userProfile?.point) : numericValue;
       setPoint(limitedValue.toString());
     }
   };

@@ -48,6 +48,7 @@ const Comment = ({ navigation, route }) => {
       );
       fetchAllData(dataToken.accessToken)
       console.log('Cmt lên server thành công:', response.data);
+      setCommentText('')
     } catch (error) {
       console.error('Lỗi khi gửi ảnh lên server:', error);
     }

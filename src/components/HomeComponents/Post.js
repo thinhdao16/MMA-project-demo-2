@@ -41,6 +41,7 @@ const Post = () => {
     userProfile,
     isLoading, setIsLoading
   } = React.useContext(AuthContext);
+  console.log(isLiked[0])
   const renderItem = ({ item }) => {
     return (
       <View>
@@ -55,7 +56,7 @@ const Post = () => {
     );
   };
   const navigation = useNavigation();
-  const [isConfirmed , setIsConfirmed] = useState(false)
+  const [isConfirmed, setIsConfirmed] = useState(false)
   const [isConfirmedPost, setIsConfirmedPost] = useState(false);
   const [reportPostText, setReportPostText] = useState('')
   const [isModalVisible, setModalVisible] = useState(false);
@@ -112,6 +113,7 @@ const Post = () => {
   };
   const sendDataToServerReport = async (id) => {
     console.log("Gửi dữ liệu lên ", id);
+    setIsLoading(false)
     axios
       .post(
         "https://trading-stuff-be-iphg.vercel.app/report/create",
@@ -129,15 +131,21 @@ const Post = () => {
       .then((response) => {
         ToastAndroid.show("Bạn báo cáo thành công!", ToastAndroid.SHORT);
         fetchAllData(accessToken.accessToken);
+        setModalVisible(!isModalVisible);
+        setReportPostText("")
       })
       .catch((error) => {
         console.log("error", error)
-        ToastAndroid.show("Bạn không được báo cáo", ToastAndroid.SHORT);
-      });
+        ToastAndroid.show("Bạn đã báo cáo bài này", ToastAndroid.SHORT);
+        setReportPostText("")
+      })
+      .finally((loading) => {
+        setIsLoading(false)
+      })
   };
 
   const handleLike = async (id) => {
-    console.log(id);
+    setIsLoading(false)
     axios
       .post(
         "https://trading-stuff-be-iphg.vercel.app/favourite/create",
@@ -154,12 +162,16 @@ const Post = () => {
         fetchAllData(accessToken.accessToken);
       })
       .catch((error) => {
-        console.error("Failed to add like", error);
-      });
+        // console.error("Failed to add like", error);
+      })
+      .finally((loading) => {
+        setIsLoading(false)
+      })
   };
   const handleDisLike = async (event, id) => {
     const idLike = isLiked?.filter((like) => like?.post?._id === id)?.[0]._id;
     event.preventDefault();
+    setIsLoading(false)
     axios
       .delete(
         `https://trading-stuff-be-iphg.vercel.app/favourite/delete/${idLike}`,
@@ -176,7 +188,10 @@ const Post = () => {
       })
       .catch((error) => {
         console.error("Failed to add Dislike", error);
-      });
+      })
+      .finally((loading) => {
+        setIsLoading(false)
+      })
   };
   const [refreshing, setRefreshing] = React.useState(false);
 
