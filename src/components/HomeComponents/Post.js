@@ -103,15 +103,20 @@ const Post = () => {
   };
 
   const handleReport = (id) => {
-    if (isConfirmed) {
-      // Gửi dữ liệu lên server
-      sendDataToServerReport(id);
-    } else {
-      Alert.alert("Xác nhận", "Bạn có chắc chắn muốn không", [
-        { text: "Hủy", style: "cancel" },
-        { text: "Xác nhận", onPress: () => setIsConfirmed(true) },
-      ]);
-    }
+    // if (isConfirmed) {
+    // Gửi dữ liệu lên server
+    // } else {
+    Alert.alert("Xác nhận", "Bạn có chắc chắn muốn không", [
+      { text: "Hủy", style: "cancel" },
+      {
+        text: "Xác nhận", onPress: () => {
+          sendDataToServerReport(id);
+          setIsConfirmed(true)
+        }
+      },
+    ]);
+    // }
+
   };
   const sendDataToServerReport = async (id) => {
     console.log("Gửi dữ liệu lên ", id);
