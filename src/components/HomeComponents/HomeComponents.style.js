@@ -34,14 +34,14 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 13,
     color: 'white',
-    marginTop:-10
+    marginTop: -10
   },
   pointPost: {
     fontWeight: '300',
     fontSize: 13,
     color: 'white',
-    marginTop : -25,
-    marginLeft:59
+    marginTop: -25,
+    marginLeft: 59
   },
   ımage: {
     width: '100%',
