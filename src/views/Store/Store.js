@@ -266,7 +266,7 @@ const Store = () => {
                     rowTextForSelection={(item, index) => {
                       return item;
                     }}
-                    dropdownStyle={{ borderRadius:15}}
+                    dropdownStyle={{ borderRadius: 15 }}
                   />
 
                 </View>
