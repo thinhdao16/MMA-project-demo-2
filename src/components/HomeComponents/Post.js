@@ -190,29 +190,7 @@ const Post = () => {
         });
     } else {
 
-      axios
-        .post(
-          "https://trading-stuff-be-iphg.vercel.app/favourite/create",
-          { postId: id },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken.accessToken}`,
-            },
-          }
-        )
-        .then((response) => {
-          console.log("like success");
-
-          setIsLiked((prevIsLiked) => [...prevIsLiked, response.data]);
-          fetchAllData(accessToken.accessToken);
-        })
-        .catch((error) => {
-          console.error("Failed to add like", error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+    console.log("dont have idLike")
     }
   };
 
