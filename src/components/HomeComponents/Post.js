@@ -39,9 +39,9 @@ const Post = () => {
     accessToken,
     fetchAllData,
     userProfile,
-    isLoading,
-    setIsLoading,
+    isLoading, setIsLoading
   } = React.useContext(AuthContext);
+  console.log(isLiked[0])
   const renderItem = ({ item }) => {
     return (
       <View>
@@ -56,16 +56,14 @@ const Post = () => {
     );
   };
   const navigation = useNavigation();
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false)
   const [isConfirmedPost, setIsConfirmedPost] = useState(false);
-  const [reportPostText, setReportPostText] = useState("");
+  const [reportPostText, setReportPostText] = useState('')
   const [isModalVisible, setModalVisible] = useState(false);
-  const [dataReportPost, setDataReportPost] = useState("");
-  const [likeLength, setLikeLength] = useState("");
-  const [disLikeLength, setDisLikeLength] = useState("");
+  const [dataReportPost, setDataReportPost] = useState('')
   const toggleModalReport = (data) => {
     setModalVisible(!isModalVisible);
-    setDataReportPost(data);
+    setDataReportPost(data)
   };
   const handlePress = (id) => {
     if (isConfirmedPost) {
@@ -99,7 +97,7 @@ const Post = () => {
       })
       .catch((error) => {
         ToastAndroid.show("Bạn không đủ điểm", ToastAndroid.SHORT);
-      });
+      })
   };
 
   const handleReport = (id) => {
@@ -120,7 +118,7 @@ const Post = () => {
   };
   const sendDataToServerReport = async (id) => {
     console.log("Gửi dữ liệu lên ", id);
-    setIsLoading(false);
+    setIsLoading(false)
     axios
       .post(
         "https://trading-stuff-be-iphg.vercel.app/report/create",
@@ -139,70 +137,75 @@ const Post = () => {
         ToastAndroid.show("Bạn báo cáo thành công!", ToastAndroid.SHORT);
         fetchAllData(accessToken.accessToken);
         setModalVisible(!isModalVisible);
-        setReportPostText("");
+        setReportPostText("")
       })
       .catch((error) => {
-        console.log("error", error);
+        console.log("error", error)
         ToastAndroid.show("Bạn đã báo cáo bài này", ToastAndroid.SHORT);
-        setReportPostText("");
+        setReportPostText("")
       })
       .finally((loading) => {
-        setIsLoading(false);
-      });
+        setIsLoading(false)
+      })
   };
 
-  const handleLike = async (id) => {
-    setIsLoading(false);
-    axios
-      .post(
-        "https://trading-stuff-be-iphg.vercel.app/favourite/create",
-        { postId: id },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.accessToken}`,
-          },
-        }
-      )
-      .then((response) => {
-        console.log("like success");
-        fetchAllData(accessToken.accessToken);
-      })
-      .catch((error) => {
-        // console.error("Failed to add like", error);
-      })
-      .finally((loading) => {
-        setIsLoading(false);
-      });
-  };
+
   const handleDisLike = async (event, id) => {
-    console.log(id);
-    const idLikePost = isLiked
-      ?.filter((f) => f?.post?._id === id)
-      .filter((f) => f?.user?._id === accessToken?.user?.id)?.[0]?._id;
+    const idLike = isLiked?.find((like) => like?.post?._id === id && like?.user?._id === accessToken?.user?.id)?._id;
     event.preventDefault();
     setIsLoading(false);
-    axios
-      .delete(
-        `https://trading-stuff-be-iphg.vercel.app/favourite/delete/${idLikePost}`,
-        {
+
+    if (idLike) {
+
+      axios
+        .delete(`https://trading-stuff-be-iphg.vercel.app/favourite/delete/${idLike}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken.accessToken}`,
           },
-        }
-      )
-      .then((response) => {
-        console.log("dislike success");
-        fetchAllData(accessToken.accessToken);
-      })
-      .catch((error) => {
-        console.error("Failed to add Dislike", error);
-      })
-      .finally((loading) => {
-        setIsLoading(false);
-      });
+        })
+        .then((response) => {
+          console.log("dislike success");
+
+
+          setIsLiked((prevIsLiked) => prevIsLiked.filter((like) => like?._id !== idLike));
+        })
+        .catch((error) => {
+          console.error("Failed to add Dislike", error);
+          fetchAllData(accessToken.accessToken);
+          setIsLiked((prevIsLiked) => prevIsLiked.filter((like) => like?._id !== idLike));
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+
+      axios
+        .post(
+          "https://trading-stuff-be-iphg.vercel.app/favourite/create",
+          { postId: id },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken.accessToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log("like success");
+
+          setIsLiked((prevIsLiked) => [...prevIsLiked, response.data]);
+          fetchAllData(accessToken.accessToken);
+        })
+        .catch((error) => {
+          console.error("Failed to add like", error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
   };
+
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
@@ -210,11 +213,13 @@ const Post = () => {
     setTimeout(() => {
       setRefreshing(false);
     }, 5000);
-    console.log("first");
+    console.log("first")
+
   }, []);
+  const [likeLength, setLikeLength] = useState(null)
   return (
     <View>
-      {/* Kiểm tra trạng thái isLoading */}
+
       {isLoading ? (
         <ActivityIndicator size="large" color="white" />
       ) : (
@@ -222,8 +227,7 @@ const Post = () => {
           <ScrollView
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          >
+            }>
             {Array.isArray(postingPushPublished) &&
               postingPushPublished
                 .sort((a, b) => {
@@ -240,11 +244,47 @@ const Post = () => {
                   const hours = duration.hours();
                   const minutes = duration.minutes();
                   const seconds = duration.seconds();
-                  const isPostLiked = isLiked
-                    ?.filter((f) => f?.post?._id === data?._id)
-                    .filter((f) => f?.user?._id === accessToken?.user?.id)
-                    ?.length
-                  // setLikeLength(isPostLiked)
+
+                  const likeLengthSV = isLiked?.filter((f) => f?.post?._id === data?._id).filter((f) => f?.user?._id === accessToken?.user?.id)?.length
+
+                  const handleLike = async (id) => {
+                    const idLike = isLiked?.find((like) => like?.post?._id === id && like?.user?._id === accessToken?.user?.id)?._id;
+
+
+                    if (idLike) {
+
+                      setIsLiked((prevIsLiked) => prevIsLiked.filter((like) => like?._id !== idLike));
+                      setLikeLength((prevLikeLength) => Math.max(0, prevLikeLength - 1));
+                    } else {
+
+                      setIsLiked((prevIsLiked) => [...prevIsLiked, { post: { _id: id }, user: { _id: accessToken?.user?.id } }]);
+                      setLikeLength((prevLikeLength) => prevLikeLength + 1);
+                    }
+
+                    setIsLoading(false);
+                    axios
+                      .post(
+                        "https://trading-stuff-be-iphg.vercel.app/favourite/create",
+                        { postId: id },
+                        {
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${accessToken.accessToken}`,
+                          },
+                        }
+                      )
+                      .then((response) => {
+                        console.log("like success");
+                        fetchAllData(accessToken.accessToken);
+                      })
+                      .catch((error) => {
+                        console.error("Failed to add like", error);
+                      })
+                      .finally(() => {
+                        setIsLoading(false);
+                      });
+                  };
+
                   return (
                     <View key={index} style={{ marginBottom: 10 }}>
                       {/* user */}
@@ -255,25 +295,15 @@ const Post = () => {
                               source={{ uri: data?.user?.img }}
                               style={styles.profilImage}
                             />
-                            <Text style={styles.title}>
-                              {data?.user?.fullname}
-                            </Text>
+                            <Text style={styles.title}>{data?.user?.fullname}</Text>
                           </View>
-                          {data?.user._id === userProfile._id ? null : (
-                            <TouchableOpacity
-                              key={data?._id}
-                              onPress={() => {
-                                toggleModalReport(data);
-                              }}
-                              style={{ alignSelf: "center", marginRight: 15 }}
-                            >
-                              <Feather
-                                name="more-vertical"
-                                size={20}
-                                color="#F5F5F5"
-                              />
-                            </TouchableOpacity>
-                          )}
+                          <TouchableOpacity
+                            key={data?._id}
+                            onPress={() => { toggleModalReport(data) }}
+                            style={{ alignSelf: "center", marginRight: 15 }}
+                          >
+                            <Feather name="more-vertical" size={20} color="#F5F5F5" />
+                          </TouchableOpacity>
                         </View>
                         <Text style={styles.pointPost}>{data?.typePost}</Text>
                       </View>
@@ -293,19 +323,31 @@ const Post = () => {
                         <View style={styles.leftIcon}>
                           <TouchableOpacity
                             onPress={(event) =>
-                              isLiked
-                                ?.filter((f) => f?.post?._id === data?._id)
-                                .filter(
-                                  (f) => f?.user?._id === accessToken?.user?.id
-                                )?.length > 0
+                              likeLengthSV && likeLengthSV > 0
                                 ? handleDisLike(event, data?._id)
                                 : handleLike(data?._id)
                             }
                           >
                             <AntDesign
-                              name={isPostLiked > 0 ? "heart" : "hearto"}
+                              name={
+                                likeLengthSV && likeLengthSV > 0
+                                  ? "heart"
+                                  : isLiked
+                                    ?.filter((f) => f?.post?._id === data?._id)
+                                    .filter((f) => f?.user?._id === accessToken?.user?.id)?.length
+                                    ? "heart"
+                                    : "hearto"
+                              }
                               size={24}
-                              color={isPostLiked > 0 ? "red" : "white"}
+                              color={
+                                likeLengthSV && likeLengthSV > 0
+                                  ? "red"
+                                  : isLiked
+                                    ?.filter((f) => f?.post?._id === data?._id)
+                                    .filter((f) => f?.user?._id === accessToken?.user?.id)?.length
+                                    ? "red"
+                                    : "white"
+                              }
                             />
                           </TouchableOpacity>
                           {/* {allCmt?.filter?.((cmt) => cmt?.posting?._id === data?.id)} */}
@@ -325,11 +367,7 @@ const Post = () => {
                               })
                             }
                           >
-                            <Feather
-                              name="message-circle"
-                              size={24}
-                              color="white"
-                            />
+                            <Feather name="message-circle" size={24} color="white" />
                           </TouchableOpacity>
                           <TouchableOpacity
                             onPress={() => bottomSheet.current.show()}
@@ -421,22 +459,12 @@ const Post = () => {
                                   marginRight: 20,
                                 }}
                               >
-                                <Text style={{ color: "white" }}>
-                                  {data?.point}
-                                </Text>
+                                <Text style={{ color: "white" }}>{data?.point}</Text>
                                 {data?.typePost === "receive" && (
-                                  <AntDesign
-                                    name="plus"
-                                    color="#48cb61"
-                                    size={18}
-                                  />
+                                  <AntDesign name="plus" color="#48cb61" size={18} />
                                 )}
                                 {data?.typePost === "give" && (
-                                  <AntDesign
-                                    name="minus"
-                                    color="#ff0000"
-                                    size={18}
-                                  />
+                                  <AntDesign name="minus" color="#ff0000" size={18} />
                                 )}
                               </View>
                             </TouchableOpacity>
@@ -445,13 +473,11 @@ const Post = () => {
                       </View>
 
                       <Text style={styles.likeText}>
-                        {isLiked?.filter?.(
-                          (like) => like?.post?._id === data?._id
-                        )?.length === 0
+                        {isLiked?.filter?.((like) => like?.post?._id === data?._id)
+                          ?.length === 0
                           ? "0"
-                          : isLiked?.filter?.(
-                            (like) => like?.post?._id === data?._id
-                          )?.length}{" "}
+                          : isLiked?.filter?.((like) => like?.post?._id === data?._id)
+                            ?.length}{" "}
                         lượt thích
                       </Text>
 
@@ -484,9 +510,8 @@ const Post = () => {
                       >
                         Xem thêm{" "}
                         {
-                          allCmt?.filter?.(
-                            (cmt) => cmt?.post?._id === data?._id
-                          ).length
+                          allCmt?.filter?.((cmt) => cmt?.post?._id === data?._id)
+                            .length
                         }{" "}
                         bình luận{" "}
                       </Text>
@@ -522,66 +547,48 @@ const Post = () => {
                         </Text>
                       </View>
 
-                      <Text
-                        style={{
-                          color: "white",
-                          marginTop: 5,
-                          marginLeft: 15,
-                        }}
-                      >
-                        {" "}
-                        {days > 0
-                          ? `${days} ngày trước`
-                          : hours > 0
-                            ? `${hours} giờ trước`
-                            : minutes > 0
-                              ? `${minutes} phút trước`
-                              : `${seconds} giây trước`}
-                      </Text>
+                      <Text style={{
+                        color: 'white',
+                        marginTop: 5,
+                        marginLeft: 15,
+                      }}> {days > 0
+                        ? `${days} ngày trước`
+                        : hours > 0
+                          ? `${hours} giờ trước`
+                          : minutes > 0
+                            ? `${minutes} phút trước`
+                            : `${seconds} giây trước`}</Text>
                       {/** start modal */}
 
                       {/*end modal */}
                     </View>
+
                   );
                 })}
           </ScrollView>
-          <Modal isVisible={isModalVisible} style={{ maxHeight: 900 }}>
+          <Modal isVisible={isModalVisible} style={{ maxHeight: 900 }} >
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-              <View
-                style={{
-                  flex: 1,
-                  backgroundColor: "#1c1c24",
-                  borderRadius: 28,
-                  ...Platform.select({
-                    ios: {
-                      shadowColor: "black",
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: 0.25,
-                      shadowRadius: 4,
-                    },
-                    android: {
-                      elevation: 5,
-                    },
-                  }),
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "flex-end",
-                    alignItems: "center",
-                    padding: 10,
-                  }}
-                >
-                  <FontAwesome
-                    name="times-circle"
-                    size={40}
-                    color="white"
-                    onPress={toggleModalReport}
-                  />
+              <View style={{
+                flex: 1,
+                backgroundColor: "#1c1c24",
+                borderRadius: 28,
+                ...Platform.select({
+                  ios: {
+                    shadowColor: 'black',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 4,
+                  },
+                  android: {
+                    elevation: 5,
+                  }
+                })
+              }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', padding: 10 }}>
+                  <FontAwesome name="times-circle" size={40} color="white" onPress={toggleModalReport} />
                 </View>
 
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, }}>
                   <View style={{ marginBottom: 5 }}>
                     <View style={styles.top}>
                       <View style={styles.topleft}>
@@ -589,30 +596,15 @@ const Post = () => {
                           source={{ uri: dataReportPost?.user?.img }}
                           style={styles.profilImage}
                         />
-                        <Text style={styles.title}>
-                          {dataReportPost?.user?.fullname}
-                        </Text>
+                        <Text style={styles.title}>{dataReportPost?.user?.fullname}</Text>
                       </View>
                     </View>
-                    <Text style={styles.pointPost}>
-                      {dataReportPost?.typePost}
-                    </Text>
+                    <Text style={styles.pointPost}>{dataReportPost?.typePost}</Text>
                   </View>
-                  <View
-                    style={{ justifyContent: "center", alignItems: "center" }}
-                  >
-                    <Image
-                      style={styles.image_bank}
-                      source={{ uri: dataReportPost?.img }}
-                    />
+                  <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <Image style={styles.image_bank} source={{ uri: dataReportPost?.img }} />
                   </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      marginTop: 5,
-                      marginBottom: 10,
-                    }}
-                  >
+                  <View style={{ flexDirection: "row", marginTop: 5, marginBottom: 10 }}>
                     <Text style={styles.postName}>
                       {dataReportPost?.user?.fullname}
                     </Text>
@@ -622,11 +614,7 @@ const Post = () => {
                     </Text>
                   </View>
 
-                  <Text
-                    style={{ color: "#393949", fontSize: 18, marginLeft: 14 }}
-                  >
-                    Description report:
-                  </Text>
+                  <Text style={{ color: "#393949", fontSize: 18, marginLeft: 14 }}>Description report:</Text>
                   <View>
                     <TextInput
                       value={reportPostText}
@@ -642,30 +630,15 @@ const Post = () => {
                       style={styles.iconInput}
                     />
                   </View>
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginTop: 15,
-                    }}
-                  >
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleReport(dataReportPost?._id);
-                      }}
-                      style={styles.btnImagePost}
-                    >
-                      <Text
-                        style={{
-                          color: "white",
-                          fontWeight: 700,
-                          fontSize: 17,
-                        }}
-                      >
+                  <View style={{ justifyContent: "center", alignItems: "center", marginTop: 15 }}>
+                    <TouchableOpacity onPress={() => { handleReport(dataReportPost?._id) }} style={styles.btnImagePost}>
+                      <Text style={{ color: "white", fontWeight: 700, fontSize: 17 }}>
                         Báo cáo
                       </Text>
                     </TouchableOpacity>
                   </View>
+
+
                 </View>
               </View>
             </ScrollView>
@@ -673,6 +646,8 @@ const Post = () => {
         </View>
       )}
     </View>
+
+
   );
 };
 
