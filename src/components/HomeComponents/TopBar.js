@@ -251,11 +251,11 @@ const TopBar = () => {
         >
           <FontAwesome name="plus-circle" size={20} color="white" onPress={toggleModal} />
         </TouchableOpacity>
-        <TouchableOpacity >
+        <TouchableOpacity  onPress={() => navigation.navigate('Notification')}>
           <Feather name="heart" size={24} color="white" />
         </TouchableOpacity>
 
-        <TouchableOpacity >
+        <TouchableOpacity onPress={() => navigation.navigate('MessageScreen')}>
           <Image
             source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
             style={{ height: 24, width: 24 }}

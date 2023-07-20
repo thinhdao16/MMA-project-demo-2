@@ -234,7 +234,7 @@ export default StyleSheet.create({
     marginBottom: 30,
     width: 340
   },
-  line: {
+  lines: {
     borderBottomWidth: 1,
     borderBottomColor: 'white',
   },
@@ -253,5 +253,31 @@ export default StyleSheet.create({
     margin: 5,
     alignItems: 'center',
     borderRadius: 20,
+  },
+  btnImagePostOffer: {
+    backgroundColor: '#445de2',
+    height: 50,
+    margin: 10,
+    marginTop: 15,
+    borderRadius: 25,
+    fontSize: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 15,
+    marginBottom: 30,
+    width: 390
+  },
+  textInputReport: {
+    backgroundColor: 'black',
+    height: 40,
+    margin: 10,
+    borderRadius: 10,
+    paddingLeft: 50,
+    padding: 5,
+    marginBottom: 10,
+    fontSize: 18,
+    color: 'white',
+    marginHorizontal: 15,
+    width: 390,
   },
 });

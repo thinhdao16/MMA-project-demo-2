@@ -42,30 +42,40 @@ const Post = () => {
     isLoading,
     setIsLoading,
   } = React.useContext(AuthContext);
-  const renderItem = ({ item }) => {
-    return (
-      <View>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Image source={item.image} style={styles.sheetImage} />
-          <View>
-            <Text style={styles.sheetLabel}>{item.user}</Text>
-            <Text style={{ color: "#a2a2a2" }}>{item.username}</Text>
-          </View>
-        </View>
-      </View>
-    );
-  };
+
   const navigation = useNavigation();
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isConfirmedPost, setIsConfirmedPost] = useState(false);
   const [reportPostText, setReportPostText] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
   const [dataReportPost, setDataReportPost] = useState("");
-  const [likeLength, setLikeLength] = useState("");
-  const [disLikeLength, setDisLikeLength] = useState("");
+  const [offerPost, setOfferPost] = useState("")
+  const [offerPostText, setOfferPostText] = useState("")
+
+  const updateOfferPostText = (text) => {
+    if (text === "") {
+      setOfferPostText("");
+    } else {
+      const numericText = parseFloat(text); 
+
+      if (!isNaN(numericText) && numericText > 0 && numericText < offerPost.point) {
+        setOfferPostText(text); 
+      } else {
+        if (!isNaN(numericText) && numericText >= offerPost.point) {
+          setOfferPostText((offerPost.point - 1).toString());
+        } else {
+          console.log("Invalid input. Please enter a number greater than 0 and less than the point value.");
+        }
+      }
+    }
+  };
   const toggleModalReport = (data) => {
     setModalVisible(!isModalVisible);
     setDataReportPost(data);
+  };
+  const handleOpenBottomSheet = (data) => {
+    bottomSheet.current.show();
+    setOfferPost(data)
   };
   const handlePress = (id) => {
     if (isConfirmedPost) {
@@ -332,7 +342,8 @@ const Post = () => {
                             />
                           </TouchableOpacity>
                           <TouchableOpacity
-                            onPress={() => bottomSheet.current.show()}
+                            key={data?._id}
+                            onPress={() => handleOpenBottomSheet(data)}
                           >
                             <Feather name="send" size={24} color="white" />
                           </TouchableOpacity>
@@ -340,70 +351,101 @@ const Post = () => {
                         <BottomSheet
                           hasDraggableIcon
                           ref={bottomSheet}
-                          height={400}
+                          height={730}
                           sheetBackgroundColor="#262626"
                         >
                           <View>
                             <View>
-                              <TextInput
-                                placeholder="Tìm kiếm"
-                                placeholderTextColor={"#a7a7a7"}
-                                style={styles.input}
-                              />
-                              <Feather
-                                name="search"
-                                size={20}
-                                color={"#4d4d4d"}
-                                style={{
-                                  position: "absolute",
-                                  margin: 15,
-                                  paddingLeft: 10,
-                                }}
-                              />
-                            </View>
-                            <View>
-                              <View
-                                style={{
-                                  justifyContent: "space-between",
-                                  flexDirection: "row",
-                                }}
-                              >
-                                <View
-                                  style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Image
-                                    style={styles.sheetImage}
-                                    source={{
-                                      uri: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                    }}
-                                  />
-                                  <Text style={styles.sheetLabel}>
-                                    Thêm bài viết vào tin của bạn
-                                  </Text>
-                                </View>
-                                <View style={{ justifyContent: "center" }}>
-                                  <AntDesign
-                                    name="right"
-                                    size={18}
-                                    color="#a4a4a4"
-                                    style={{
-                                      margin: 10,
-                                      alignItems: "center",
-                                      marginRight: 20,
-                                    }}
-                                  />
-                                </View>
+                              <View style={{ alignItems: 'center' }}>
+                                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginTop: 10 }}>Trả giá</Text>
                               </View>
                             </View>
                             <View>
-                              <FlatList
-                                data={send}
-                                keyExtractor={(item) => item.id}
-                                renderItem={renderItem}
-                              />
+                              <View>
+                                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                  <Image source={{ uri: offerPost?.user?.img }} style={styles.sheetImage} />
+                                  <View>
+                                    <Text style={styles.sheetLabel}>{offerPost?.user?.fullname}</Text>
+                                    <Text style={{ color: "#a2a2a2", fontWeight: 800 }}>Point: {offerPost?.point}</Text>
+                                  </View>
+                                </View>
+                                <View
+                                  style={{ justifyContent: "center", alignItems: "center" }}
+                                >
+                                  <Image
+                                    style={{
+                                      height: 390,
+                                      width: 390,
+                                      resizeMode: 'contain',
+                                      margin: 5,
+                                      alignItems: 'center',
+                                      borderRadius: 20,
+                                    }}
+                                    source={{ uri: offerPost?.img }}
+                                  />
+                                </View>
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    marginTop: 5,
+                                    marginBottom: 10,
+                                  }}
+                                >
+                                  <Text style={styles.postName}>
+                                    {offerPost?.user?.fullname}
+                                  </Text>
+                                  <Text style={{ color: "white", marginTop: 2 }}>
+                                    {" "}
+                                    {offerPost?.description}
+                                  </Text>
+                                </View>
+
+                                <Text
+                                  style={{ color: "#393949", fontSize: 18, marginLeft: 14 }}
+                                >
+                                  Trả giá (gốc : {offerPost?.point})
+                                </Text>
+                                <View>
+                                  <TextInput
+                                    value={offerPostText}
+                                    onChangeText={(text) => updateOfferPostText(text)}
+                                    keyboardType="numeric"
+                                    placeholder="Input report"
+                                    placeholderTextColor="grey"
+                                    style={styles.textInputReport}
+                                  />
+                                  <Feather
+                                    name="flag"
+                                    size={20}
+                                    color="white"
+                                    style={styles.iconInput}
+                                  />
+                                </View>
+                                <View
+                                  style={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginTop: 15,
+                                  }}
+                                >
+                                  <TouchableOpacity
+                                    onPress={() => {
+                                      handleReport(offerPost?._id);
+                                    }}
+                                    style={styles.btnImagePostOffer}
+                                  >
+                                    <Text
+                                      style={{
+                                        color: "white",
+                                        fontWeight: 700,
+                                        fontSize: 17,
+                                      }}
+                                    >
+                                      Trả giá
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              </View>
                             </View>
                           </View>
                         </BottomSheet>

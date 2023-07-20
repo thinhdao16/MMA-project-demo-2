@@ -69,4 +69,42 @@ export default StyleSheet.create({
   icons: {
     marginBottom: 20,
   },
+  sheetImage: {
+    width: 35,
+    height: 35,
+    borderRadius: 100,
+    margin: 10,
+  },
+  sheetLabel: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 13,
+  },
+  input: {
+    marginLeft: 15,
+    fontWeight: '500',
+    color: 'white',
+    width:275,
+    maxHeight: 500
+  },
+  bottom: {
+    backgroundColor: '#272727',
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  line: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#3a3a3a',
+    marginTop: 10,
+  },
+  imageUser: {
+    width: 35,
+    height: 35,
+    borderRadius: 100,
+    marginLeft: 10,
+    marginRight:7
+  },
 });

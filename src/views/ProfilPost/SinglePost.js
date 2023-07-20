@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
     Alert,
     FlatList,
@@ -9,40 +9,53 @@ import {
     ToastAndroid,
     TouchableOpacity,
     View,
-} from 'react-native';
+    SafeAreaView,
+} from "react-native";
 import Modal from "react-native-modal";
 import BottomSheet from "react-native-gesture-bottom-sheet";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Feather from "react-native-vector-icons/Feather";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import DoubleTap from "react-native-double-tap";
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-import Container from '../../components/Container/Container';
+import Container from "../../components/Container/Container";
 
-import styles from '../../components/HomeComponents/HomeComponents.style';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigation } from '@react-navigation/native';
-import moment from 'moment';
+import styles from "../../components/HomeComponents/HomeComponents.style";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import moment from "moment";
 
 const SinglePost = () => {
     const navigation = useNavigation();
     const bottomSheet = React.useRef();
+    const flatListRef = React.useRef(null);
 
-    const { singlePage, allCmt,
+    const {
+        singlePage,
+        allCmt,
         isLiked,
         setIsLiked,
         accessToken,
         fetchAllData,
-        userProfile, } = React.useContext(AuthContext)
+        userProfile,
+        postingPushPublished,
+    } = React.useContext(AuthContext);
 
     const [isConfirmed, setIsConfirmed] = useState(false);
-    const [reportPostText, setReportPostText] = useState('')
+    const [reportPostText, setReportPostText] = useState("");
     const [isModalVisible, setModalVisible] = useState(false);
-    const [dataReportPost, setDataReportPost] = useState('')
+    const [dataReportPost, setDataReportPost] = useState("");
+    const [offerPost, setOfferPost] = useState("");
+    const [chooseOffer, setChooseOffer] = useState("");
+    const [selectedItemId, setSelectedItemId] = useState(null);
+    const handleOpenBottomSheet = (data) => {
+        bottomSheet.current.show();
+        setOfferPost(data);
+    };
     const toggleModalReport = (data) => {
         setModalVisible(!isModalVisible);
-        setDataReportPost(data)
+        setDataReportPost(data);
     };
     const handlePress = (id) => {
         if (isConfirmed) {
@@ -111,7 +124,7 @@ const SinglePost = () => {
                 fetchAllData(accessToken.accessToken);
             })
             .catch((error) => {
-                console.log("error", error)
+                console.log("error", error);
                 ToastAndroid.show("Bạn không được báo cáo", ToastAndroid.SHORT);
             });
     };
@@ -165,34 +178,68 @@ const SinglePost = () => {
     const hours = duration.hours();
     const minutes = duration.minutes();
     const seconds = duration.seconds();
+
+    const renderItem = ({ item, index }) => {
+        return (
+            <TouchableOpacity
+                onPress={() => {
+                    setSelectedItemId(item?._id); // Update the selected item ID when clicked
+                }}
+                style={{
+                    // flexDirection: selectedItemId === item?._id ? 'row' : "row",
+                    justifyContent: selectedItemId === item?._id ? 'center' : "center",
+                    // alignItems: selectedItemId === item?._id ? 'center' : "center",
+                    borderWidth: selectedItemId === item?._id ? 1 : 0, // Numeric value, not a string
+                    borderColor: selectedItemId === item?._id ? '#f7f7f8' : "#262626",
+                    borderRadius: selectedItemId === item?._id ? 15 : 0, // Numeric value, not a string
+                    backgroundColor: selectedItemId === item?._id ? "#262626" : "transparent", // Apply a different background color to the selected item
+                }}
+            >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Image source={{ uri: item?.img }} style={styles.sheetImage} />
+                    <View>
+                        <Text style={styles.sheetLabel}>{item?.user?.fullname}</Text>
+                        <Text style={{ color: "#a2a2a2" }}>{item?.point}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        );
+    };
     return (
         <Container insets={{ top: true, bottom: true }}>
-            <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 10,
-                marginTop: 10,
-            }}>
+            <View
+                style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginLeft: 10,
+                    marginTop: 10,
+                }}
+            >
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Ionicons name="chevron-back" size={28} color="white" />
                 </TouchableOpacity>
-                <View style={{ flex: 1, alignItems: 'center' }}>
-                    <Text style={{
-                        color: 'white',
-                        fontSize: 22,
-                        fontWeight: 'bold',
-                        marginBottom: 7,
-                        marginRight: 25,
-                    }}>Post</Text>
+                <View style={{ flex: 1, alignItems: "center" }}>
+                    <Text
+                        style={{
+                            color: "white",
+                            fontSize: 22,
+                            fontWeight: "bold",
+                            marginBottom: 7,
+                            marginRight: 25,
+                        }}
+                    >
+                        Post
+                    </Text>
                 </View>
             </View>
 
-
-            <View style={{
-                borderBottomWidth: 0.5,
-                borderBottomColor: 'grey',
-            }} />
-            <View style={{ marginBottom: 10, }}>
+            <View
+                style={{
+                    borderBottomWidth: 0.5,
+                    borderBottomColor: "grey",
+                }}
+            />
+            <View style={{ marginBottom: 10 }}>
                 {/* user */}
                 <View style={{ marginBottom: 5 }}>
                     <View style={styles.top}>
@@ -205,7 +252,9 @@ const SinglePost = () => {
                         </View>
                         <TouchableOpacity
                             key={singlePage?._id}
-                            onPress={() => { toggleModalReport(singlePage) }}
+                            onPress={() => {
+                                toggleModalReport(singlePage);
+                            }}
                             style={{ alignSelf: "center", marginRight: 15 }}
                         >
                             <Feather name="more-vertical" size={20} color="#F5F5F5" />
@@ -241,9 +290,8 @@ const SinglePost = () => {
                                 name={
                                     isLiked
                                         ?.filter((f) => f?.post?._id === singlePage?._id)
-                                        .filter(
-                                            (f) => f?.user?._id === accessToken?.user?.id
-                                        )?.length > 0
+                                        .filter((f) => f?.user?._id === accessToken?.user?.id)
+                                        ?.length > 0
                                         ? "heart"
                                         : "hearto"
                                 }
@@ -251,9 +299,8 @@ const SinglePost = () => {
                                 color={
                                     isLiked
                                         ?.filter((f) => f?.post?._id === singlePage?._id)
-                                        .filter(
-                                            (f) => f?.user?._id === accessToken?.user?.id
-                                        )?.length > 0
+                                        .filter((f) => f?.user?._id === accessToken?.user?.id)
+                                        ?.length > 0
                                         ? "red"
                                         : "white"
                                 }
@@ -279,10 +326,72 @@ const SinglePost = () => {
                             <Feather name="message-circle" size={24} color="white" />
                         </TouchableOpacity>
                         <TouchableOpacity
-                            onPress={() => bottomSheet.current.show()}
+                            key={singlePage?._id}
+                            onPress={() => handleOpenBottomSheet(singlePage)}
                         >
                             <Feather name="send" size={24} color="white" />
                         </TouchableOpacity>
+                        <BottomSheet
+                            hasDraggableIcon
+                            ref={bottomSheet}
+                            height={100 + postingPushPublished?.length * 65}
+                            sheetBackgroundColor="#262626"
+                        >
+                            <View>
+                                <View>
+                                    <View style={{ alignItems: "center" }}>
+                                        <Text style={{ color: "white", fontWeight: "bold", fontSize: 18, marginTop: 10 }}>
+                                            Trả giá
+                                        </Text>
+                                    </View>
+                                </View>
+                                <View>
+                                    <View>
+                                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                            <Image source={{ uri: offerPost?.user?.img }} style={styles.sheetImage} />
+                                            <View>
+                                                <Text style={styles.sheetLabel}>{offerPost?.user?.fullname}</Text>
+                                                <Text style={{ color: "#a2a2a2", fontWeight: "800" }}>
+                                                    Point: {offerPost?.point}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.line} />
+                                        <View style={{ maxHeight: 400, marginTop: 10 }}>
+                                            <ScrollView>
+                                                <FlatList
+                                                    ref={flatListRef}
+                                                    horizontal={false}
+                                                    data={postingPushPublished}
+                                                    keyExtractor={(_item, index) => index.toString()}
+                                                    renderItem={renderItem}
+                                                    numColumns={1}
+                                                    showsVerticalScrollIndicator={false}
+                                                    nestedScrollEnabled={true} // Set nestedScrollEnabled to true
+                                                />
+                                            </ScrollView>
+                                        </View>
+                                        <View
+                                            style={{
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                marginTop: 15,
+                                            }}
+                                        >
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    handleReport(offerPost?._id);
+                                                }}
+                                                style={styles.btnImagePost}
+                                            >
+                                                <Text style={{ color: "white", fontWeight: "700", fontSize: 17 }}>Báo cáo</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </View>
+                            </View>
+                        </BottomSheet>
+
                     </View>
                     <View>
                         {singlePage?.user._id === userProfile._id ? null : (
@@ -322,9 +431,7 @@ const SinglePost = () => {
 
                 {/*description */}
                 <View style={{ flexDirection: "row", marginTop: 5 }}>
-                    <Text style={styles.postName}>
-                        {singlePage?.user?.fullname}
-                    </Text>
+                    <Text style={styles.postName}>{singlePage?.user?.fullname}</Text>
                     <Text style={{ color: "white", marginTop: 2 }}>
                         {" "}
                         {singlePage?.description}
@@ -348,10 +455,7 @@ const SinglePost = () => {
                     }
                 >
                     Xem thêm{" "}
-                    {
-                        allCmt?.filter?.((cmt) => cmt?.post?._id === singlePage?._id)
-                            .length
-                    }{" "}
+                    {allCmt?.filter?.((cmt) => cmt?.post?._id === singlePage?._id).length}{" "}
                     bình luận{" "}
                 </Text>
 
@@ -386,44 +490,63 @@ const SinglePost = () => {
                     </Text>
                 </View>
 
-                <Text style={{
-                    color: 'white',
-                    marginTop: 5,
-                    marginLeft: 15,
-                }}> {days > 0
-                    ? `${days} ngày trước`
-                    : hours > 0
-                        ? `${hours} giờ trước`
-                        : minutes > 0
-                            ? `${minutes} phút trước`
-                            : `${seconds} giây trước`}</Text>
+                <Text
+                    style={{
+                        color: "white",
+                        marginTop: 5,
+                        marginLeft: 15,
+                    }}
+                >
+                    {" "}
+                    {days > 0
+                        ? `${days} ngày trước`
+                        : hours > 0
+                            ? `${hours} giờ trước`
+                            : minutes > 0
+                                ? `${minutes} phút trước`
+                                : `${seconds} giây trước`}
+                </Text>
                 {/** start modal */}
 
                 {/*end modal */}
             </View>
-            <Modal isVisible={isModalVisible} style={{ maxHeight: 900 }} >
+            <Modal isVisible={isModalVisible} style={{ maxHeight: 900 }}>
                 <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                    <View style={{
-                        flex: 1,
-                        backgroundColor: "#1c1c24",
-                        borderRadius: 28,
-                        ...Platform.select({
-                            ios: {
-                                shadowColor: 'black',
-                                shadowOffset: { width: 0, height: 2 },
-                                shadowOpacity: 0.25,
-                                shadowRadius: 4,
-                            },
-                            android: {
-                                elevation: 5,
-                            }
-                        })
-                    }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', padding: 10 }}>
-                            <FontAwesome name="times-circle" size={40} color="white" onPress={toggleModalReport} />
+                    <View
+                        style={{
+                            flex: 1,
+                            backgroundColor: "#1c1c24",
+                            borderRadius: 28,
+                            ...Platform.select({
+                                ios: {
+                                    shadowColor: "black",
+                                    shadowOffset: { width: 0, height: 2 },
+                                    shadowOpacity: 0.25,
+                                    shadowRadius: 4,
+                                },
+                                android: {
+                                    elevation: 5,
+                                },
+                            }),
+                        }}
+                    >
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "flex-end",
+                                alignItems: "center",
+                                padding: 10,
+                            }}
+                        >
+                            <FontAwesome
+                                name="times-circle"
+                                size={40}
+                                color="white"
+                                onPress={toggleModalReport}
+                            />
                         </View>
 
-                        <View style={{ flex: 1, }}>
+                        <View style={{ flex: 1 }}>
                             <View style={{ marginBottom: 5 }}>
                                 <View style={styles.top}>
                                     <View style={styles.topleft}>
@@ -431,15 +554,22 @@ const SinglePost = () => {
                                             source={{ uri: dataReportPost?.user?.img }}
                                             style={styles.profilImage}
                                         />
-                                        <Text style={styles.title}>{dataReportPost?.user?.fullname}</Text>
+                                        <Text style={styles.title}>
+                                            {dataReportPost?.user?.fullname}
+                                        </Text>
                                     </View>
                                 </View>
                                 <Text style={styles.pointPost}>{dataReportPost?.typePost}</Text>
                             </View>
-                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                <Image style={styles.image_bank} source={{ uri: dataReportPost?.img }} />
+                            <View style={{ justifyContent: "center", alignItems: "center" }}>
+                                <Image
+                                    style={styles.image_bank}
+                                    source={{ uri: dataReportPost?.img }}
+                                />
                             </View>
-                            <View style={{ flexDirection: "row", marginTop: 5, marginBottom: 10 }}>
+                            <View
+                                style={{ flexDirection: "row", marginTop: 5, marginBottom: 10 }}
+                            >
                                 <Text style={styles.postName}>
                                     {dataReportPost?.user?.fullname}
                                 </Text>
@@ -449,7 +579,9 @@ const SinglePost = () => {
                                 </Text>
                             </View>
 
-                            <Text style={{ color: "#393949", fontSize: 18, marginLeft: 14 }}>Description report:</Text>
+                            <Text style={{ color: "#393949", fontSize: 18, marginLeft: 14 }}>
+                                Description report:
+                            </Text>
                             <View>
                                 <TextInput
                                     value={reportPostText}
@@ -465,15 +597,26 @@ const SinglePost = () => {
                                     style={styles.iconInput}
                                 />
                             </View>
-                            <View style={{ justifyContent: "center", alignItems: "center", marginTop: 15 }}>
-                                <TouchableOpacity onPress={() => { handleReport(dataReportPost?._id) }} style={styles.btnImagePost}>
-                                    <Text style={{ color: "white", fontWeight: 700, fontSize: 17 }}>
+                            <View
+                                style={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginTop: 15,
+                                }}
+                            >
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        handleReport(dataReportPost?._id);
+                                    }}
+                                    style={styles.btnImagePost}
+                                >
+                                    <Text
+                                        style={{ color: "white", fontWeight: 700, fontSize: 17 }}
+                                    >
                                         Báo cáo
                                     </Text>
                                 </TouchableOpacity>
                             </View>
-
-
                         </View>
                     </View>
                 </ScrollView>

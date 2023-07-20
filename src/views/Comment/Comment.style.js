@@ -70,4 +70,12 @@ export default StyleSheet.create({
     fontWeight: '500',
     color: 'white',
   },
+  bottom: {
+    backgroundColor: '#262626',
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
 });

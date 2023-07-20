@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import AnimatedLottieView from 'lottie-react-native';
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -8,9 +8,11 @@ import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Video from 'react-native-video';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import send from "../../storage/database/message";
 
 import styles from './DiscoverComponents.style';
 import BottomModal from './BottomModal';
+import BottomSheet from 'react-native-gesture-bottom-sheet';
 
 const Reel = ({ item }) => {
   const ref = useRef(null);
@@ -51,37 +53,24 @@ const Reel = ({ item }) => {
 };
 const Right = ({ item }) => {
   const [like, setLike] = useState(item.islike);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [commentText, setCommentText] = useState('');
 
-  const showModal = () => {
-    setModalVisible(true);
+
+  const bottomSheet = useRef();
+  const renderItem = ({ item }) => {
+    return (
+      <View>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Image source={item.image} style={styles.sheetImage} />
+          <View>
+            <Text style={styles.sheetLabel}>{item.user}</Text>
+            <Text style={{ color: "#a2a2a2" }}>{item.username}</Text>
+          </View>
+        </View>
+      </View>
+    );
   };
 
-  const hideModal = () => {
-    setModalVisible(false);
-  };
-  const styless = StyleSheet.create({
-    container: {
-      justifyContent: 'space-around',
-      alignItems: 'center',
-      textAlign: 'center',
-    },
-    button: {
-      backgroundColor: 'blue',
-      padding: 10,
-      borderRadius: 5,
-      marginBottom: 20,
-    },
-    buttonText: {
-      color: 'white',
-      fontSize: 16,
-    },
-    modalText: {
-      fontSize: 18,
-      textAlign: 'center',
-      color: "white"
-    },
-  });
   return (
     <View style={styles.right}>
       <TouchableOpacity onPress={() => setLike(!like)}>
@@ -92,23 +81,107 @@ const Right = ({ item }) => {
         />
       </TouchableOpacity>
       <Text style={styles.number}>{like ? item.likes + 1 : item.likes}</Text>
-
-      <View style={styless.container}>
-        <TouchableOpacity onPress={showModal}>
+        <TouchableOpacity
+          onPress={() => bottomSheet.current.show()}
+        >
           <Ionicons name="chatbubble-outline" size={32} color="white" />
           <Text style={styles.number}>{item.comment}</Text>
         </TouchableOpacity>
+        {/** cmt */}
+        <BottomSheet
+        hasDraggableIcon
+        ref={bottomSheet}
+        height={90 + send.length*75}
+        sheetBackgroundColor="#272727"
+      >
+        <View>
+          <View>
+            <View>
+              <View
+                style={{
+                  justifyContent: "space-between",
+                  flexDirection: "row",
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <Image
+                    style={styles.sheetImage}
+                    source={{
+                      uri: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                    }}
+                  />
+                  <Text style={styles.sheetLabel}>
+                    Thêm bài viết vào tin của bạn
+                  </Text>
+                </View>
+                <View style={{ justifyContent: "center" }}>
+                  <AntDesign
+                    name="right"
+                    size={18}
+                    color="#a4a4a4"
+                    style={{
+                      margin: 10,
+                      alignItems: "center",
+                      marginRight: 20,
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+            <View>
+              <FlatList
+                data={send}
+                keyExtractor={(item) => item.id}
+                renderItem={renderItem}
+              />
+            </View>
 
-        <BottomModal visible={modalVisible} >
-          <ScrollView>
-            <TouchableOpacity activeOpacity={1} onPress={hideModal}>
-              <Text style={styless.modalText}>Close Modal</Text>
-            </TouchableOpacity>
-            <Text style={styless.modalText}>Hello, this is a modal content!</Text>
-          </ScrollView>
-        </BottomModal>
+          </View>
+          <View style={styles.line} />
 
-      </View>
+          <View style={styles.bottom}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image
+                style={styles.imageUser}
+                source={{ uri: "https://static.vecteezy.com/system/resources/previews/007/296/443/original/user-icon-person-icon-client-symbol-profile-icon-vector.jpg" }}
+              />
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderWidth: 1, 
+                borderColor: '#3a3a3a', 
+                borderRadius: 50, 
+                padding: 5, 
+                width:350,
+                }}>
+
+                <TextInput
+                  placeholder={`Comment under the name you want ...`}
+                  placeholderTextColor="#969696"
+                  style={styles.input}
+                  value={commentText}
+                  multiline 
+                  onChangeText={setCommentText}
+                />
+                {!commentText.length ? (
+                  <Text style={{ color: '#254253', marginLeft: -60, marginRight:10 }}>Đăng</Text>
+                ) : (
+                  <Text style={{ color: '#0096fd', marginLeft: -60 , marginRight:10 }} >Đăng</Text>
+                )}
+              </View>
+
+            </View>
+          </View>
+        </View>
+
+      </BottomSheet>
+      {/**end */}
       <Feather name="send" size={28} color="white" style={styles.icons} />
       <Entypo
         name="dots-three-vertical"
@@ -162,3 +235,49 @@ const Left = ({ item }) => {
   );
 };
 export default Reel;
+
+{/* <BottomModal visible={modalVisible} >
+<ScrollView>
+  <TouchableOpacity activeOpacity={1} onPress={hideModal}>
+    <Text style={styless.modalText}>Close Modal</Text>
+  </TouchableOpacity>
+  <Text style={styless.modalText}>Hello, this is a modal content!</Text>
+</ScrollView>
+</BottomModal> */}
+{/* <View style={styless.container}>
+<TouchableOpacity onPress={showModal}>
+ 
+</TouchableOpacity>
+
+
+
+</View> */}
+// const showModal = () => {
+//   setModalVisible(true);
+// };
+
+// const hideModal = () => {
+//   setModalVisible(false);
+// };
+// const styless = StyleSheet.create({
+//   container: {
+//     justifyContent: 'space-around',
+//     alignItems: 'center',
+//     textAlign: 'center',
+//   },
+//   button: {
+//     backgroundColor: 'blue',
+//     padding: 10,
+//     borderRadius: 5,
+//     marginBottom: 20,
+//   },
+//   buttonText: {
+//     color: 'white',
+//     fontSize: 16,
+//   },
+//   modalText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//     color: "white"
+//   },
+// });

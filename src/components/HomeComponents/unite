@@ -1,0 +1,131 @@
+  
+    const [offerPost, setOfferPost] = useState("")
+    const [offerPostText, setOfferPostText] = useState("")
+  
+    const updateOfferPostText = (text) => {
+      if (text === "") {
+        setOfferPostText("");
+      } else {
+        const numericText = parseFloat(text); 
+  
+        if (!isNaN(numericText) && numericText > 0 && numericText < offerPost.point) {
+          setOfferPostText(text); 
+        } else {
+          if (!isNaN(numericText) && numericText >= offerPost.point) {
+            setOfferPostText((offerPost.point - 1).toString());
+          } else {
+            console.log("Invalid input. Please enter a number greater than 0 and less than the point value.");
+          }
+        }
+      }
+    };
+    const toggleModalReport = (data) => {
+      setModalVisible(!isModalVisible);
+      setDataReportPost(data);
+    };
+    const handleOpenBottomSheet = (data) => {
+      bottomSheet.current.show();
+      setOfferPost(data)
+    };
+
+  <BottomSheet
+                          hasDraggableIcon
+                          ref={bottomSheet}
+                          height={730}
+                          sheetBackgroundColor="#262626"
+                        >
+                          <View>
+                            <View>
+                              <View style={{ alignItems: 'center' }}>
+                                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginTop: 10 }}>Trả giá</Text>
+                              </View>
+                            </View>
+                            <View>
+                              <View>
+                                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                  <Image source={{ uri: offerPost?.user?.img }} style={styles.sheetImage} />
+                                  <View>
+                                    <Text style={styles.sheetLabel}>{offerPost?.user?.fullname}</Text>
+                                    <Text style={{ color: "#a2a2a2", fontWeight: 800 }}>Point: {offerPost?.point}</Text>
+                                  </View>
+                                </View>
+                                <View
+                                  style={{ justifyContent: "center", alignItems: "center" }}
+                                >
+                                  <Image
+                                    style={{
+                                      height: 390,
+                                      width: 390,
+                                      resizeMode: 'contain',
+                                      margin: 5,
+                                      alignItems: 'center',
+                                      borderRadius: 20,
+                                    }}
+                                    source={{ uri: offerPost?.img }}
+                                  />
+                                </View>
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    marginTop: 5,
+                                    marginBottom: 10,
+                                  }}
+                                >
+                                  <Text style={styles.postName}>
+                                    {offerPost?.user?.fullname}
+                                  </Text>
+                                  <Text style={{ color: "white", marginTop: 2 }}>
+                                    {" "}
+                                    {offerPost?.description}
+                                  </Text>
+                                </View>
+
+                                <Text
+                                  style={{ color: "#393949", fontSize: 18, marginLeft: 14 }}
+                                >
+                                  Trả giá (gốc : {offerPost?.point})
+                                </Text>
+                                <View>
+                                  <TextInput
+                                    value={offerPostText}
+                                    onChangeText={(text) => updateOfferPostText(text)}
+                                    keyboardType="numeric"
+                                    placeholder="Input report"
+                                    placeholderTextColor="grey"
+                                    style={styles.textInputReport}
+                                  />
+                                  <Feather
+                                    name="flag"
+                                    size={20}
+                                    color="white"
+                                    style={styles.iconInput}
+                                  />
+                                </View>
+                                <View
+                                  style={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginTop: 15,
+                                  }}
+                                >
+                                  <TouchableOpacity
+                                    onPress={() => {
+                                      handleReport(offerPost?._id);
+                                    }}
+                                    style={styles.btnImagePostOffer}
+                                  >
+                                    <Text
+                                      style={{
+                                        color: "white",
+                                        fontWeight: 700,
+                                        fontSize: 17,
+                                      }}
+                                    >
+                                      Trả giá
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                        </BottomSheet>

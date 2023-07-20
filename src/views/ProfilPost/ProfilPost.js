@@ -1,27 +1,32 @@
 import React from 'react';
-import { FlatList, Image, SafeAreaView, TouchableOpacity } from 'react-native';
+import { FlatList, Image, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 
 import Container from '../../components/Container/Container';
 import { AuthContext } from '../context/AuthContext';
 
 const ProfilPost = ({ navigation }) => {
-  const { postingPushPublished  , setSinglePage, userProfile } = React.useContext(AuthContext)
+  const { postingPushPublished, setSinglePage, userProfile } = React.useContext(AuthContext)
   const flatListRef = React.useRef(null);
 
 
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
-    style={{ width: '33%', margin: 0.8 }}
-    onPress={() => {
-      setSinglePage(item);
-      navigation.navigate('SinglePost');
-    }}
-  >
-    <Image
-      source={{ uri: item.img }}
-      style={{ width: '100%', height: 130, borderWidth: 1 }}
-    />
-  </TouchableOpacity>
+      style={{ width: '33%', margin: 0.8 }}
+      onPress={() => {
+        setSinglePage(item);
+        navigation.navigate('SinglePost');
+      }}
+    >
+      <Image
+        source={{ uri: item.img }}
+        style={{ width: '100%', height: 130, borderWidth: 1 }}
+      />
+      <Text style={{
+        color: 'white',
+        fontSize: 12,
+        paddingLeft: 5,
+      }}>691</Text>
+    </TouchableOpacity>
   );
 
   return (

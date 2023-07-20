@@ -14,13 +14,25 @@ const TopTabNavigator = () => {
       screenOptions={({route}) => ({
         tabBarIcon: () => {
           if (route.name === 'ProfilPost') {
-            return <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} />;
+            return <Image style={{  width: 35,
+              height: 35,
+              borderRadius: 100,
+              marginLeft: 10,
+              marginRight:7}}  source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} />;
           }
           if (route.name === 'ProfilReels') {
-            return <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} />;
+            return <Image style={{  width: 35,
+              height: 35,
+              borderRadius: 100,
+              marginLeft: 10,
+              marginRight:7}}  source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} />;
           }
           if (route.name === 'Tag') {
-            return <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} />;
+            return <Image style={{  width: 35,
+              height: 35,
+              borderRadius: 100,
+              marginLeft: 10,
+              marginRight:7}}  source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} />;
           }
         },
         tabBarIndicatorStyle: {backgroundColor: 'white', height: 2},
