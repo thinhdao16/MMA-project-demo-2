@@ -58,13 +58,27 @@ const Reel = ({ item }) => {
 };
 const Right = ({ item }) => {
   const itemArray = [item]
-  const { setIsLoading, accessToken, fetchAllData } = useContext(AuthContext)
+  const { setIsLoading, accessToken, fetchAllData ,userProfile} = useContext(AuthContext)
   const [isPendingUpdated, setIsPendingUpdated] = useState(null);
   const [like, setLike] = useState(item.islike);
   const [commentText, setCommentText] = useState('');
   const [auctionPost, setAuctionPost] = useState("");
   const flatListRef = React.useRef(null);
   const [dataAuctionInPost, setDataAuctionInPost] = useState("")
+
+  const bidders = dataAuctionInPost[0]?.bidders;
+  const maxBidAmount = bidders?.reduce((max, bidder) => {
+    return bidder.bidAmount > max ? bidder.bidAmount : max;
+  }, 0);
+  const maxBidAmountUser = bidders?.reduce((max, bidder) => {
+    if (bidder.user?._id === userProfile?._id) {
+      return bidder.bidAmount > max ? bidder.bidAmount : max;
+    }
+    return max;
+  }, 0);
+  const plusBid = dataAuctionInPost[0]?.bidStep + dataAuctionInPost[0]?.minPoint + maxBidAmount - maxBidAmountUser 
+
+  console.log(plusBid); 
   const handleOpenBottomSheet = (data) => {
     bottomSheet.current.show();
     setAuctionPost(data);
@@ -73,11 +87,10 @@ const Right = ({ item }) => {
 
   React.useEffect(() => {
     if (auctionPost) {
-      console.log(auctionPost[0])
       setIsLoading(false)
       axios
         .get(
-          `https://trading-stuff-be-iphg.vercel.app/auction/${auctionPost[0]?._id}`,
+          `https://trading-stuff-be-iphg.vercel.app/auction/post/${auctionPost[0]?._id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken.accessToken}`,
@@ -86,9 +99,13 @@ const Right = ({ item }) => {
           }
         )
         .then((response) => {
-          ToastAndroid.show("Đây là bài viết của bạn !", ToastAndroid.SHORT);
-          setDataAuctionInPost(response.data)
-          fetchAllData(accessToken.accessToken);
+          if (response.data.status === 'done') {
+            // Hiển thị thông báo phiên đấu giá đã kết thúc
+            ToastAndroid.show('Phiên đấu giá đã kết thúc', ToastAndroid.SHORT);
+          } else {
+            setDataAuctionInPost(response.data)
+          }
+
         })
         .catch((error) => {
           // console.log("error", error)
@@ -101,7 +118,6 @@ const Right = ({ item }) => {
   }, [auctionPost, isPendingUpdated])
 
   const handleUploadImage = async () => {
-
     try {
       const response = await axios.post(
         'https://trading-stuff-be-iphg.vercel.app/auction/create',
@@ -120,6 +136,7 @@ const Right = ({ item }) => {
       ToastAndroid.show('Đấu giá thành công !', ToastAndroid.SHORT);
       setCommentText('')
     } catch (error) {
+      console.log(error)
       ToastAndroid.show('Đấu giá thất bại !', ToastAndroid.SHORT);
     }
   };
@@ -127,10 +144,10 @@ const Right = ({ item }) => {
     return (
       <View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Image source={{ uri: item?.img }} style={styles.sheetImage} />
+          <Image source={{ uri: item?.user?.img }} style={styles.sheetImage} />
           <View>
             <Text style={styles.sheetLabel}>{item?.user?.fullname}</Text>
-            <Text style={{ color: '#a2a2a2' }}>{item?.user?.fullname}</Text>
+            <Text style={{ color: '#a2a2a2' }}>{item?.bidAmount}</Text>
           </View>
         </View>
       </View>
@@ -145,9 +162,10 @@ const Right = ({ item }) => {
           color={like ? 'red' : 'white'}
         />
       </TouchableOpacity>
-      <Text style={styles.number}>{like ? item?.likes + 1 : item?.likes}</Text>
+      <Text style={styles.number}>56</Text>
       <TouchableOpacity
         onPress={() => handleOpenBottomSheet(itemArray)}
+        style={{ alignItems: 'center' }}
       >
         <Ionicons name="chatbubble-outline" size={32} color="white" />
         <Text style={styles.number}>Vô</Text>
@@ -162,45 +180,15 @@ const Right = ({ item }) => {
         <View>
           <View>
             <View>
-              <View
-                style={{
-                  justifyContent: "space-between",
-                  flexDirection: "row",
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image
-                    style={styles.sheetImage}
-                    source={{
-                      uri: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                    }}
-                  />
-                  <Text style={styles.sheetLabel}>
-                    Thêm bài viết vào tin của bạn
-                  </Text>
-                </View>
-                <View style={{ justifyContent: "center" }}>
-                  <AntDesign
-                    name="right"
-                    size={18}
-                    color="#a4a4a4"
-                    style={{
-                      margin: 10,
-                      alignItems: "center",
-                      marginRight: 20,
-                    }}
-                  />
+              <View>
+                <View style={{ alignItems: 'center' }}>
+                  <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginTop: 10 }}>Đấu giá</Text>
                 </View>
               </View>
             </View>
             <View>
               <FlatList
-                data={dataAuctionInPost}
+                data={dataAuctionInPost[0]?.bidders}
                 renderItem={renderItem}
                 keyExtractor={(_item, index) => index.toString()}
                 horizontal={false}
@@ -238,6 +226,7 @@ const Right = ({ item }) => {
                   value={commentText}
                   multiline
                   onChangeText={setCommentText}
+                  keyboardType="numeric"
                 />
                 {!commentText.length ? (
                   <Text style={{ color: '#254253', marginLeft: -60, marginRight: 10 }}>Đăng</Text>

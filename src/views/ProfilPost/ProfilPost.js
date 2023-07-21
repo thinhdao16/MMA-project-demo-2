@@ -28,7 +28,6 @@ const ProfilPost = ({ navigation }) => {
       }}>691</Text>
     </TouchableOpacity>
   );
-
   return (
     <SafeAreaView style={{ backgroundColor: 'black', flex: 1 }}>
       <FlatList

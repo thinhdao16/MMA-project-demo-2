@@ -107,4 +107,10 @@ export default StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  butonText: {
+    color: 'white',
+    alignItems: 'center',
+    fontWeight: 'bold',
+    fontSize: 13,
+  },
 });

@@ -3,6 +3,7 @@ import {
   Image,
   ScrollView,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -15,6 +16,9 @@ import notification from '../../storage/database/notification';
 
 import styles from './Notification.style';
 import { AuthContext } from '../context/AuthContext';
+import axios from 'axios';
+import { ActivityIndicator } from 'react-native';
+import moment from 'moment';
 const Header = () => {
   const navigation = useNavigation();
 
@@ -29,29 +33,53 @@ const Header = () => {
 };
 
 const Notification = () => {
-  const [follow, setFollow] = useState([]);
 
-  const checkFollow = React.useCallback((currentFollow, user) => {
-    return currentFollow.find(item => item === user);
-  }, []);
-
-  const handleFlowPress = React.useCallback(
-    user => {
-      setFollow(currentFollow => {
-        const isFollowed = checkFollow(currentFollow, user);
-
-        if (isFollowed) {
-          return currentFollow.filter(item => item !== user);
+  const { transactions, accessToken, fetchAllData, isLoading } = React.useContext(AuthContext)
+  const transactionChoose = transactions?.filter((status) => status?.status === "pending")?.filter((trans) => trans?.transaction_type === "give")
+  const handleFlowPress = (id) => {
+    axios
+      .put(
+        `https://trading-stuff-be-iphg.vercel.app/transaction/confirm/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken.accessToken}`,
+            "Content-Type": "application/json",
+          },
         }
+      )
+      .then((response) => {
+        ToastAndroid.show("Hóa đơn đã hoàn thành", ToastAndroid.SHORT);
+        fetchAllData(accessToken.accessToken);
+      })
+      .catch((error) => {
+        console.log(error);
+        ToastAndroid.show("Hóa đơn chưa hoàn thành", ToastAndroid.SHORT);
+      })
+  };
+  const handleDeleteTransaction = (id) => {
+    axios
+      .put(
+        `https://trading-stuff-be-iphg.vercel.app/transaction/reject/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken.accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        ToastAndroid.show("Hóa đơn đã hoàn thành", ToastAndroid.SHORT);
+        fetchAllData(accessToken.accessToken);
+      })
+      .catch((error) => {
+        console.log(error);
+        ToastAndroid.show("Hóa đơn chưa hoàn thành", ToastAndroid.SHORT);
+      })
+  };
 
-        return [...currentFollow, user];
-      });
-    },
-    [checkFollow],
-  );
 
-const {transactions} = React.useContext(AuthContext)
-console.log(transactions[0])
   return (
     <Container insets={{ top: true }}>
       <Header />
@@ -60,80 +88,92 @@ console.log(transactions[0])
           <Text style={styles.time}>Tuần này</Text>
         </View>
         <View>
-          {transactions.map((data, index) => {
-            return (
-              <View key={index}>
-                <View style={styles.container}>
-                  <View>
-                    <Image style={styles.image} source={{uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}} />
-                  </View>
+          {isLoading ? (
+            <ActivityIndicator size="large" color="white" />
+          ) : (
+            <View>
+              {transactionChoose.map((data, index) => {
 
-                  <View
-                    style={{
-                      width: '46%',
-                      marginLeft: 15,
-                    }}>
-                    <Text style={styles.user}>
-                    {data?.transaction_category}{' '}
-                      <Text style={styles.message}>{data?.point}</Text>
-                    </Text>
-                    <Text style={styles.message}>{data?.point}</Text>
+                const timeDiff = moment().diff(data?.updatedAt);
+                const duration = moment.duration(timeDiff);
 
-                  </View>
+                const days = duration.days();
+                const hours = duration.hours();
+                const minutes = duration.minutes();
+                const seconds = duration.seconds();
+                return (
+                  <View key={index}>
+                    <View style={styles.container}>
+                      <View>
+                        <Image style={styles.image} source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} />
+                      </View>
 
-                  <View style={{ alignContent: 'center' }}>
-                    <TouchableOpacity
-                      activeOpacity={0.7}
-                      style={{
-                        borderRadius: 10,
-                        width: 120,
-                        height: 40,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: checkFollow(follow, data.user)
-                          ? '#262626'
-                          : '#0098fd',
-                        marginLeft: 10,
-                      }}
-                      onPress={() => handleFlowPress(data.user)}>
-                      {checkFollow(follow, data.user) ? (
-                        <Text style={styles.butonText}>Hủy theo dõi</Text>
-                      ) : (
-                        <Text style={styles.butonText}>Theo dõi</Text>
-                      )}
-                    </TouchableOpacity>
+                      <View
+                        style={{
+                          width: '26%',
+                          marginLeft: 15,
+                        }}>
+                        <Text style={styles.user}>
+                          {data?.transaction_category} | {' '}
+                          <Text style={styles.message}>{data?.transaction_type}</Text>
+                        </Text>
+                        <Text style={styles.message}>Point: {data?.point}</Text>
+                      </View>
+                      <View
+                        style={{
+                          width: '15%',
+                          marginLeft: 15,
+                        }}>
+                        <Text style={{
+                          color: 'white',
+                          marginTop: 5,
+                          marginLeft: 15,
+                        }}> {days > 0
+                          ? `${days} ngày trước`
+                          : hours > 0
+                            ? `${hours} giờ trước`
+                            : minutes > 0
+                              ? `${minutes} phút trước`
+                              : `${seconds} giây trước`}</Text>
+                      </View>
+                      <View style={{ flexDirection: 'row', alignContent: 'center' }}>
+                        <TouchableOpacity
+                          activeOpacity={0.7}
+                          style={{
+                            borderRadius: 10,
+                            width: 60,
+                            height: 40,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor:
+                              '#0098fd',
+                            marginLeft: 10,
+                          }}
+                          onPress={() => handleFlowPress(data?._id)}>
+                          <Text style={styles.butonText}>Ok</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          activeOpacity={0.7}
+                          style={{
+                            borderRadius: 10,
+                            width: 60,
+                            height: 40,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor:
+                              '#262626',
+                            marginLeft: 10,
+                          }}
+                          onPress={() => handleDeleteTransaction(data?._id)}>
+                          <Text style={styles.butonText}>Hủy</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
                   </View>
-                  
-                </View>
-              </View>
-            );
-          })}
-          <View style={styles.line} />
-          <Text style={styles.time}>Tháng này</Text>
-        </View>
-        <View style={styles.container}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <Image
-              style={styles.image}
-              source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
-            />
-            <View style={{ marginLeft: 15 }}>
-              <Text style={styles.user}>
-                Xuân Thiệp <Text style={styles.message}>đã thích câu chuyện của bạn · 3 giờ</Text>
-              </Text>
+                );
+              })}
             </View>
-          </View>
-
-          <View style={{ alignItems: 'center' }}>
-            <Image
-              style={styles.story}
-              source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
-            />
-          </View>
+          )}
         </View>
       </ScrollView>
     </Container>

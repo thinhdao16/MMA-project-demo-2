@@ -26,6 +26,7 @@ import { AuthContext } from "../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SinglePost = () => {
     const navigation = useNavigation();
@@ -49,7 +50,7 @@ const SinglePost = () => {
     const [isPendingUpdated, setIsPendingUpdated] = useState(null);
     const [dataOfferPost, setDataOfferPost] = useState("")
     React.useEffect(() => {
-        if (singlePage) {
+        if (offerPost) {
             setIsLoading(false)
             axios
                 .get(
@@ -65,7 +66,6 @@ const SinglePost = () => {
                     ToastAndroid.show("Đây là bài viết của bạn !", ToastAndroid.SHORT);
                     const pendingOffers = response.data.data.filter((item) => item.status === "pending");
                     setDataOfferPost(pendingOffers);
-                    fetchAllData(accessToken.accessToken);
                 })
                 .catch((error) => {
                     console.log("error", error)
@@ -81,14 +81,17 @@ const SinglePost = () => {
         bottomSheet.current.show();
         setOfferPost(data);
     };
-
     const handleApprovedOffer = async (id) => {
+        const accessToken = await AsyncStorage.getItem('Access_Token');
+        const dataToken = JSON.parse(accessToken);
+
         axios
             .put(
                 `https://trading-stuff-be-iphg.vercel.app/offer/approve/${selectedItemId}`,
+                {},
                 {
                     headers: {
-                        Authorization: `Bearer ${accessToken.accessToken}`,
+                        Authorization: `Bearer ${dataToken.accessToken}`,
                         "Content-Type": "application/json",
                     },
                 }
@@ -96,14 +99,37 @@ const SinglePost = () => {
             .then((response) => {
                 ToastAndroid.show("Bạn tương tác thành công!", ToastAndroid.SHORT);
                 setIsPendingUpdated((prev) => !prev);
-                fetchAllData(accessToken.accessToken);
-
+                // fetchAllData(accessToken.accessToken);
             })
             .catch((error) => {
                 ToastAndroid.show("Bạn không đủ điểm", ToastAndroid.SHORT);
             });
     };
 
+    const handleRejectedOffer = async (id) => {
+        const accessToken = await AsyncStorage.getItem('Access_Token');
+        const dataToken = JSON.parse(accessToken);
+
+        axios
+            .put(
+                `https://trading-stuff-be-iphg.vercel.app/offer/reject/${selectedItemId}`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${dataToken.accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            )
+            .then((response) => {
+                ToastAndroid.show("Bạn tương tác thành công!", ToastAndroid.SHORT);
+                setIsPendingUpdated((prev) => !prev);
+                // fetchAllData(accessToken.accessToken);
+            })
+            .catch((error) => {
+                ToastAndroid.show("Bạn không đủ điểm", ToastAndroid.SHORT);
+            });
+    };
     const handleLike = async (id) => {
         console.log(id);
         axios
@@ -300,7 +326,7 @@ const SinglePost = () => {
                         <BottomSheet
                             hasDraggableIcon
                             ref={bottomSheet}
-                            height={50 + postingPushPublished?.length * 50}
+                            height={300 + dataOfferPost?.length * 50}
                             sheetBackgroundColor="#262626"
                         >
                             <View>
@@ -355,7 +381,7 @@ const SinglePost = () => {
 
                                             <TouchableOpacity
                                                 onPress={() => {
-                                                    handleReport(offerPost?._id);
+                                                    handleRejectedOffer(offerPost?._id);
                                                 }}
                                                 style={styles.btnImageReOf}
                                             >
@@ -397,6 +423,7 @@ const SinglePost = () => {
                                 allCmt: allCmt?.filter?.(
                                     (cmt) => cmt?.posting?._id === singlePage?._id
                                 ),
+                                idPost: singlePage?._id,
                                 image: singlePage?.user?.img,
                                 user: singlePage?.user?.fullname,
                                 explanation: singlePage?.description,

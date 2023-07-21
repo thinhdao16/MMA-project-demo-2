@@ -23,7 +23,6 @@ const Comment = ({ navigation, route }) => {
   const { fetchAllData, userProfile, allCmt, isLoading } = React.useContext(AuthContext)
 
   const commentData = allCmt?.filter((cmt) => cmt?.post?._id === route.params.idPost)
-
   const [commentText, setCommentText] = useState('');
   const handleUploadImage = async () => {
     const accessToken = await AsyncStorage.getItem('Access_Token');
