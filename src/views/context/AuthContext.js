@@ -19,6 +19,7 @@ export function AuthContextProvider({ children }) {
     const [postingPushLimited, setPostingPushLimited] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [auctionData, setAuctionData] = useState([])
+    const [transactions, setTransactions] = useState([])
     //data global
 
     const fetchAllData = async (accessToken) => {
@@ -52,6 +53,15 @@ export function AuthContextProvider({ children }) {
             );
             const responseProfile = await fetch(
                 "https://trading-stuff-be-iphg.vercel.app/user/me",
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+            const responseTransaction = await fetch(
+                "https://trading-stuff-be-iphg.vercel.app/transaction/me",
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -100,6 +110,12 @@ export function AuthContextProvider({ children }) {
             } else {
                 console.error(`HTTP error Profile! Status: ${responseProfile.status}`);
             }
+            if (responseTransaction.ok) {
+                const responseDataTransaction = await responseTransaction.json();
+                setTransactions(responseDataTransaction.data);
+            } else {
+                console.error(`HTTP error Profile! Status: ${responseProfile.status}`);
+            }
         } catch (error) {
             console.error(error);
         } finally {
@@ -132,7 +148,8 @@ export function AuthContextProvider({ children }) {
                 setPostingPushLimited,
                 isLoading,
                 setIsLoading,
-                auctionData, setAuctionData
+                auctionData, setAuctionData,
+                transactions, setTransactions
             }}
         >
             {children}

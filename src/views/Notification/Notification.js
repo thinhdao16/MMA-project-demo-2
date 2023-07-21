@@ -14,6 +14,7 @@ import Container from '../../components/Container/Container';
 import notification from '../../storage/database/notification';
 
 import styles from './Notification.style';
+import { AuthContext } from '../context/AuthContext';
 const Header = () => {
   const navigation = useNavigation();
 
@@ -49,6 +50,8 @@ const Notification = () => {
     [checkFollow],
   );
 
+const {transactions} = React.useContext(AuthContext)
+console.log(transactions[0])
   return (
     <Container insets={{ top: true }}>
       <Header />
@@ -57,12 +60,12 @@ const Notification = () => {
           <Text style={styles.time}>Tuần này</Text>
         </View>
         <View>
-          {notification.map((data, index) => {
+          {transactions.map((data, index) => {
             return (
               <View key={index}>
                 <View style={styles.container}>
                   <View>
-                    <Image style={styles.image} source={data.image} />
+                    <Image style={styles.image} source={{uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}} />
                   </View>
 
                   <View
@@ -71,9 +74,11 @@ const Notification = () => {
                       marginLeft: 15,
                     }}>
                     <Text style={styles.user}>
-                      {data.user}{' '}
-                      <Text style={styles.message}>{data.message}</Text>
+                    {data?.transaction_category}{' '}
+                      <Text style={styles.message}>{data?.point}</Text>
                     </Text>
+                    <Text style={styles.message}>{data?.point}</Text>
+
                   </View>
 
                   <View style={{ alignContent: 'center' }}>
@@ -98,6 +103,7 @@ const Notification = () => {
                       )}
                     </TouchableOpacity>
                   </View>
+                  
                 </View>
               </View>
             );

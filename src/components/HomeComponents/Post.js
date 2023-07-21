@@ -91,7 +91,7 @@ const Post = () => {
       .post(
         "https://trading-stuff-be-iphg.vercel.app/post/exchange",
         {
-          id: id,
+          postId: id,
           message: "app qua hoan hoa",
         },
         {
@@ -106,6 +106,7 @@ const Post = () => {
         fetchAllData(accessToken.accessToken);
       })
       .catch((error) => {
+        console.log(error)
         ToastAndroid.show("Bạn không đủ điểm", ToastAndroid.SHORT);
       })
   };
