@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import {
-    Alert,
-    FlatList,
     Image,
     ScrollView,
     Text,
@@ -11,12 +9,13 @@ import {
     View,
 } from "react-native";
 import Modal from "react-native-modal";
-import BottomSheet from "react-native-gesture-bottom-sheet";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Feather from "react-native-vector-icons/Feather";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import DoubleTap from "react-native-double-tap";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import AwesomeAlert from 'react-native-awesome-alerts';
+
 
 import Container from "../../components/Container/Container";
 
@@ -30,11 +29,11 @@ const SingleSearch = () => {
     const navigation = useNavigation();
     const bottomSheet = React.useRef();
 
+
     const {
         singlePage,
         allCmt,
         isLiked,
-        setIsLiked,
         accessToken,
         fetchAllData,
         userProfile,
@@ -44,6 +43,12 @@ const SingleSearch = () => {
     const [reportPostText, setReportPostText] = useState("");
     const [isModalVisible, setModalVisible] = useState(false);
     const [dataReportPost, setDataReportPost] = useState("");
+
+
+    const [showReportAlert, setShowReportAlert] = useState(false);
+    const [reportConfirmation, setReportConfirmation] = useState(false);
+    const [showConfirmationAlert, setShowConfirmationAlert] = useState(false);
+
     const toggleModalReport = (data) => {
         setModalVisible(!isModalVisible);
         setDataReportPost(data);
@@ -53,10 +58,7 @@ const SingleSearch = () => {
             // Gửi dữ liệu lên server
             sendDataToServerPost(id);
         } else {
-            Alert.alert("Xác nhận", "Bạn có chắc chắn muốn không", [
-                { text: "Hủy", style: "cancel" },
-                { text: "Xác nhận", onPress: () => setIsConfirmed(true) },
-            ]);
+            setShowConfirmationAlert(true);
         }
     };
     const sendDataToServerPost = async (id) => {
@@ -84,15 +86,8 @@ const SingleSearch = () => {
             });
     };
     const handleReport = (id) => {
-        if (isConfirmed) {
-            // Gửi dữ liệu lên server
-            sendDataToServerReport(id);
-        } else {
-            Alert.alert("Xác nhận", "Bạn có chắc chắn muốn không", [
-                { text: "Hủy", style: "cancel" },
-                { text: "Xác nhận", onPress: () => setIsConfirmed(true) },
-            ]);
-        }
+        setReportConfirmation(false);
+        setShowReportAlert(true);
     };
     const sendDataToServerReport = async (id) => {
         console.log("Gửi dữ liệu lên ", id);
@@ -517,6 +512,77 @@ const SingleSearch = () => {
                     </View>
                 </ScrollView>
             </Modal>
+
+            <AwesomeAlert
+
+                show={showReportAlert}
+                showProgress={false}
+                title="Xác nhận"
+                message="Bạn có chắc chắn muốn không?"
+                closeOnTouchOutside={true}
+                closeOnHardwareBackPress={false}
+                showCancelButton={true}
+                showConfirmButton={true}
+                cancelText="Hủy"
+                confirmText="Xác nhận"
+                confirmButtonColor="#DD6B55"
+                onCancelPressed={() => setShowReportAlert(false)}
+                onConfirmPressed={() => {
+                    sendDataToServerReport(dataReportPost?._id);
+                    setReportConfirmation(true);
+                    setShowReportAlert(false);
+                }}
+                alertContainerStyle={{
+                    borderRadius: 20,
+                    paddingHorizontal: 20,
+                    paddingVertical: 30,
+                }}
+                titleStyle={{
+                    color: 'black',
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                }}
+                messageStyle={{
+                    color: 'black',
+                    fontSize: 18,
+                }}
+
+            />
+
+
+            <AwesomeAlert
+                title="Xác nhận"
+                showProgress={false}
+                message="Bạn có chắc chắn muốn không?"
+                cancelText="Hủy"
+                confirmText="Xác nhận"
+                closeOnTouchOutside={true}
+                closeOnHardwareBackPress={false}
+                showCancelButton={true}
+                showConfirmButton={true}
+                confirmButtonColor="#DD6B55"
+                show={showConfirmationAlert}
+                onCancelPressed={() => setShowConfirmationAlert(false)}
+                onConfirmPressed={() => {
+                    sendDataToServerPost(dataReportPost?._id);
+                    setIsConfirmed(true);
+                    setShowConfirmationAlert(false);
+                }}
+                alertContainerStyle={{
+                    borderRadius: 20,
+                    paddingHorizontal: 20,
+                    paddingVertical: 30,
+                }}
+                titleStyle={{
+                    color: 'black',
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                }}
+                messageStyle={{
+                    color: 'black',
+                    fontSize: 18,
+                }}
+            />
         </Container>
     );
 };
