@@ -19,6 +19,7 @@ import Feather from "react-native-vector-icons/Feather";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 import DoubleTap from "react-native-double-tap";
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 import send from "../../storage/database/message";
 import data from "../../storage/database/post";
@@ -30,6 +31,17 @@ import axios from "axios";
 import moment from "moment";
 
 const Post = () => {
+
+  const showAwesomeAlert = (title, message, onConfirm) => {
+    setShowReportAlert(true);
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertOnConfirm(() => {
+      onConfirm();
+      setShowReportAlert(false);
+    });
+  };
+
   const bottomSheet = useRef();
   const {
     postingPushPublished,
@@ -49,6 +61,9 @@ const Post = () => {
   const [dataReportPost, setDataReportPost] = useState("");
   const [offerPost, setOfferPost] = useState("")
   const [offerPostText, setOfferPostText] = useState("")
+
+  const [showReportAlert, setShowReportAlert] = useState(false);
+  const [reportConfirmation, setReportConfirmation] = useState(false)
 
   const updateOfferPostText = (text) => {
     if (text === "") {
@@ -111,21 +126,10 @@ const Post = () => {
   };
 
   const handleReport = (id) => {
-    // if (isConfirmed) {
-    // Gửi dữ liệu lên server
-    // } else {
-    Alert.alert("Xác nhận", "Bạn có chắc chắn muốn không", [
-      { text: "Hủy", style: "cancel" },
-      {
-        text: "Xác nhận", onPress: () => {
-          sendDataToServerReport(id);
-          setIsConfirmed(true)
-        }
-      },
-    ]);
-    // }
-
+    setReportConfirmation(false);
+    setShowReportAlert(true);
   };
+
   const sendDataToServerReport = async (id) => {
     console.log("Gửi dữ liệu lên ", id);
     setIsLoading(false)
@@ -398,12 +402,15 @@ const Post = () => {
                             <Feather name="send" size={24} color="white" />
                           </TouchableOpacity>
                         </View>
+
+
                         <BottomSheet
                           hasDraggableIcon
                           ref={bottomSheet}
-                          height={730}
+                          height={660}
                           sheetBackgroundColor="#262626"
                         >
+
                           <View>
                             <View>
                               <View style={{ alignItems: 'center' }}>
@@ -419,63 +426,65 @@ const Post = () => {
                                     <Text style={{ color: "#a2a2a2", fontWeight: 800 }}>Point: {offerPost?.point}</Text>
                                   </View>
                                 </View>
-                                <View
-                                  style={{ justifyContent: "center", alignItems: "center" }}
-                                >
-                                  <Image
+                                <ScrollView>
+                                  <View
+                                    style={{ justifyContent: "center", alignItems: "center", }}
+                                  >
+                                    <Image
+                                      style={{
+                                        height: 350,
+                                        width: 370,
+                                        resizeMode: 'contain',
+                                        margin: 5,
+                                        alignItems: 'center',
+                                        borderRadius: 20,
+                                      }}
+                                      source={{ uri: offerPost?.img }}
+                                    />
+                                  </View>
+                                  <View
                                     style={{
-                                      height: 390,
-                                      width: 390,
-                                      resizeMode: 'contain',
-                                      margin: 5,
-                                      alignItems: 'center',
-                                      borderRadius: 20,
+                                      flexDirection: "row",
+                                      marginTop: 5,
+                                      marginBottom: 10,
                                     }}
-                                    source={{ uri: offerPost?.img }}
-                                  />
-                                </View>
-                                <View
-                                  style={{
-                                    flexDirection: "row",
-                                    marginTop: 5,
-                                    marginBottom: 10,
-                                  }}
-                                >
-                                  <Text style={styles.postName}>
-                                    {offerPost?.user?.fullname}
-                                  </Text>
-                                  <Text style={{ color: "white", marginTop: 2 }}>
-                                    {" "}
-                                    {offerPost?.description}
-                                  </Text>
-                                </View>
+                                  >
+                                    <Text style={styles.postName}>
+                                      {offerPost?.user?.fullname}
+                                    </Text>
+                                    <Text style={{ color: "white", marginTop: 2 }}>
+                                      {" "}
+                                      {offerPost?.description}
+                                    </Text>
+                                  </View>
 
-                                <Text
-                                  style={{ color: "#393949", fontSize: 18, marginLeft: 14 }}
-                                >
-                                  Trả giá (gốc : {offerPost?.point})
-                                </Text>
-                                <View>
-                                  <TextInput
-                                    value={offerPostText}
-                                    onChangeText={(text) => updateOfferPostText(text)}
-                                    keyboardType="numeric"
-                                    placeholder="Input report"
-                                    placeholderTextColor="grey"
-                                    style={styles.textInputReport}
-                                  />
-                                  <Feather
-                                    name="flag"
-                                    size={20}
-                                    color="white"
-                                    style={styles.iconInput}
-                                  />
-                                </View>
+                                  <Text
+                                    style={{ color: "#393949", fontSize: 18, marginLeft: 14 }}
+                                  >
+                                    Trả giá (gốc : {offerPost?.point})
+                                  </Text>
+                                  <View>
+                                    <TextInput
+                                      value={offerPostText}
+                                      onChangeText={(text) => updateOfferPostText(text)}
+                                      keyboardType="numeric"
+                                      placeholder="Input report"
+                                      placeholderTextColor="grey"
+                                      style={styles.textInputReport}
+                                    />
+                                    <Feather
+                                      name="flag"
+                                      size={20}
+                                      color="white"
+                                      style={styles.iconInput}
+                                    />
+                                  </View>
+                                </ScrollView>
                                 <View
                                   style={{
                                     justifyContent: "center",
                                     alignItems: "center",
-                                    marginTop: 15,
+                                    // marginTop: 15,
                                   }}
                                 >
                                   <TouchableOpacity
@@ -699,6 +708,42 @@ const Post = () => {
           </Modal>
         </View>
       )}
+      <AwesomeAlert
+        show={showReportAlert} // Sử dụng state để điều khiển hiển thị AwesomeAlert
+        showProgress={false}
+        title="Xác nhận"
+        message="Bạn có chắc chắn muốn không?"
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+        showCancelButton={true}
+        showConfirmButton={true}
+        cancelText="Hủy"
+        confirmText="Xác nhận"
+        confirmButtonColor="#DD6B55"
+        onCancelPressed={() => setShowReportAlert(false)} // Ẩn AwesomeAlert khi nhấn nút "Hủy"
+        onConfirmPressed={() => {
+          sendDataToServerReport(dataReportPost?._id);
+          setReportConfirmation(true); // Đặt state xác nhận báo cáo thành true khi nhấn nút "Xác nhận"
+          setShowReportAlert(false); // Ẩn AwesomeAlert khi nhấn nút "Xác nhận"
+        }}
+        alertContainerStyle={{
+          borderRadius: 20,
+          paddingHorizontal: 20,
+          paddingVertical: 30,
+        }}
+        titleStyle={{
+          color: 'black',
+          fontSize: 24,
+          fontWeight: 'bold',
+        }}
+        messageStyle={{
+          color: 'black',
+          fontSize: 18,
+        }}
+      // confirmButtonTextStyle={{
+      //   fontSize: 15,
+      // }}
+      />
     </View>
 
 
