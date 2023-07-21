@@ -160,6 +160,7 @@ const Post = () => {
   };
 
 
+
   const handleDisLike = async (event, id) => {
     const idLike = isLiked?.find((like) => like?.post?._id === id && like?.user?._id === accessToken?.user?.id)?._id;
     event.preventDefault();
@@ -190,7 +191,7 @@ const Post = () => {
         });
     } else {
 
-    console.log("dont have idLike")
+      console.log("dont have idLike")
     }
   };
 
@@ -205,6 +206,39 @@ const Post = () => {
 
   }, []);
   const [likeLength, setLikeLength] = useState(null)
+
+  const sendOffer = async (id) => {
+    console.log("Gửi dữ liệu lên ", id);
+    setIsLoading(false)
+    axios
+      .post(
+        "https://trading-stuff-be-iphg.vercel.app/offer/create",
+        {
+          postId: id,
+          description: offerPostText,
+          point: offerPostText
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken.accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        ToastAndroid.show("Trả giá đã được gửi!", ToastAndroid.SHORT);
+        fetchAllData(accessToken.accessToken);
+        setOfferPostText("")
+      })
+      .catch((error) => {
+        console.log("error", error)
+        ToastAndroid.show("Trả chưa được gửi", ToastAndroid.SHORT);
+        setOfferPostText("")
+      })
+      .finally((loading) => {
+        setIsLoading(false)
+      })
+  };
   return (
     <View>
 
@@ -446,7 +480,7 @@ const Post = () => {
                                 >
                                   <TouchableOpacity
                                     onPress={() => {
-                                      handleReport(offerPost?._id);
+                                      sendOffer(offerPost?._id);
                                     }}
                                     style={styles.btnImagePostOffer}
                                   >

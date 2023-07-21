@@ -280,4 +280,17 @@ export default StyleSheet.create({
     marginHorizontal: 15,
     width: 390,
   },
+
+  btnImageReOf: {
+    backgroundColor: 'black',
+    height: 50,
+    margin: 10,
+    marginTop: -15,
+    borderRadius: 25,
+    fontSize: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 15,
+    width: 340
+  },
 });

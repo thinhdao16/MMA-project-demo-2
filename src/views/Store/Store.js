@@ -31,7 +31,7 @@ import { AuthContext } from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
 
-const countries = ["receive", "give"]
+const countries = ["receive", "give", "auction"]
 
 const TopLabel = () => {
   const bottomSheet = useRef();
@@ -90,7 +90,8 @@ const Store = () => {
   const [description, setDescription] = useState('');
   const [typePost, setTypePost] = useState('')
   const [point, setPoint] = useState("");
-
+  const [minPoint , setMinPoint] = useState("")
+  const [bidStep, setBidStep] = useState("")
   const [isTypePostEmpty, setIsTypePostEmpty] = useState(true);
 
   const handlePointChange = (text) => {
@@ -165,6 +166,8 @@ const Store = () => {
       formData.append('description', description);
       formData.append('type', typePost)
       formData.append('point', point)
+      formData.append("bidStep", bidStep)
+      formData.append("minPoint", minPoint)
       try {
         const response = await axios.post(
           'https://trading-stuff-be-iphg.vercel.app/post/create',
@@ -237,6 +240,42 @@ const Store = () => {
                 <TextInput
                   value={description}
                   onChangeText={setDescription}
+                  placeholder="Input description"
+                  placeholderTextColor="grey"
+                  style={styles.textInput}
+                />
+                <Feather
+                  name="file-text"
+                  size={20}
+                  color="white"
+                  style={styles.iconInput}
+                />
+              </View>
+              <View>
+                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18, }}>minPoint :</Text>
+              </View>
+              <View>
+                <TextInput
+                  value={minPoint}
+                  onChangeText={setMinPoint}
+                  placeholder="Input description"
+                  placeholderTextColor="grey"
+                  style={styles.textInput}
+                />
+                <Feather
+                  name="file-text"
+                  size={20}
+                  color="white"
+                  style={styles.iconInput}
+                />
+              </View>
+              <View>
+                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18, }}>bidStep :</Text>
+              </View>
+              <View>
+                <TextInput
+                  value={bidStep}
+                  onChangeText={setBidStep}
                   placeholder="Input description"
                   placeholderTextColor="grey"
                   style={styles.textInput}

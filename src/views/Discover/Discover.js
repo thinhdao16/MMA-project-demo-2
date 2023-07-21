@@ -4,6 +4,7 @@ import Feather from 'react-native-vector-icons/Feather';
 
 import Container from '../../components/Container/Container';
 import Reels from '../../components/DiscoverComponents/Reels';
+import Auction from '../../components/DiscoverComponents/Auction';
 
 import styles from './Discover.style';
 

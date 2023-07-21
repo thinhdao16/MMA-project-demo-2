@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import AnimatedLottieView from 'lottie-react-native';
-import { Dimensions, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -13,6 +13,11 @@ import send from "../../storage/database/message";
 import styles from './DiscoverComponents.style';
 import BottomModal from './BottomModal';
 import BottomSheet from 'react-native-gesture-bottom-sheet';
+import { AuthContext } from '../../views/context/AuthContext';
+import axios from 'axios';
+
+
+
 
 const Reel = ({ item }) => {
   const ref = useRef(null);
@@ -31,8 +36,8 @@ const Reel = ({ item }) => {
       }}>
       <Image
         videoRef={ref}
-        source={item.image}
-        resizeMode="cover"
+        source={{ uri: item?.img }}
+        resizeMode="contain"
         repeat={true}
         style={{ ...styles.video, height: height }}
         muted={true}
@@ -52,25 +57,85 @@ const Reel = ({ item }) => {
   );
 };
 const Right = ({ item }) => {
+  const itemArray = [item]
+  const { setIsLoading, accessToken, fetchAllData } = useContext(AuthContext)
+  const [isPendingUpdated, setIsPendingUpdated] = useState(null);
   const [like, setLike] = useState(item.islike);
   const [commentText, setCommentText] = useState('');
-
-
+  const [auctionPost, setAuctionPost] = useState("");
+  const flatListRef = React.useRef(null);
+  const [dataAuctionInPost, setDataAuctionInPost] = useState("")
+  const handleOpenBottomSheet = (data) => {
+    bottomSheet.current.show();
+    setAuctionPost(data);
+  };
   const bottomSheet = useRef();
-  const renderItem = ({ item }) => {
+
+  React.useEffect(() => {
+    if (auctionPost) {
+      console.log(auctionPost[0])
+      setIsLoading(false)
+      axios
+        .get(
+          `https://trading-stuff-be-iphg.vercel.app/auction/${auctionPost[0]?._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken.accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          ToastAndroid.show("Đây là bài viết của bạn !", ToastAndroid.SHORT);
+          setDataAuctionInPost(response.data)
+          fetchAllData(accessToken.accessToken);
+        })
+        .catch((error) => {
+          // console.log("error", error)
+          // ToastAndroid.show("Không có phiên đấu giá", ToastAndroid.SHORT);
+        })
+        .finally((loading) => {
+          setIsLoading(false)
+        })
+    }
+  }, [auctionPost, isPendingUpdated])
+
+  const handleUploadImage = async () => {
+
+    try {
+      const response = await axios.post(
+        'https://trading-stuff-be-iphg.vercel.app/auction/create',
+        {
+          bidAmount: commentText,
+          postId: auctionPost[0]?._id
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken.accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      fetchAllData(accessToken.accessToken)
+      ToastAndroid.show('Đấu giá thành công !', ToastAndroid.SHORT);
+      setCommentText('')
+    } catch (error) {
+      ToastAndroid.show('Đấu giá thất bại !', ToastAndroid.SHORT);
+    }
+  };
+  const renderItem = ({ item, index }) => {
     return (
       <View>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Image source={item.image} style={styles.sheetImage} />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image source={{ uri: item?.img }} style={styles.sheetImage} />
           <View>
-            <Text style={styles.sheetLabel}>{item.user}</Text>
-            <Text style={{ color: "#a2a2a2" }}>{item.username}</Text>
+            <Text style={styles.sheetLabel}>{item?.user?.fullname}</Text>
+            <Text style={{ color: '#a2a2a2' }}>{item?.user?.fullname}</Text>
           </View>
         </View>
       </View>
     );
-  };
-
+  }
   return (
     <View style={styles.right}>
       <TouchableOpacity onPress={() => setLike(!like)}>
@@ -80,18 +145,18 @@ const Right = ({ item }) => {
           color={like ? 'red' : 'white'}
         />
       </TouchableOpacity>
-      <Text style={styles.number}>{like ? item.likes + 1 : item.likes}</Text>
-        <TouchableOpacity
-          onPress={() => bottomSheet.current.show()}
-        >
-          <Ionicons name="chatbubble-outline" size={32} color="white" />
-          <Text style={styles.number}>{item.comment}</Text>
-        </TouchableOpacity>
-        {/** cmt */}
-        <BottomSheet
+      <Text style={styles.number}>{like ? item?.likes + 1 : item?.likes}</Text>
+      <TouchableOpacity
+        onPress={() => handleOpenBottomSheet(itemArray)}
+      >
+        <Ionicons name="chatbubble-outline" size={32} color="white" />
+        <Text style={styles.number}>Vô</Text>
+      </TouchableOpacity>
+      {/** cmt */}
+      <BottomSheet
         hasDraggableIcon
         ref={bottomSheet}
-        height={90 + send.length*75}
+        height={90 + send.length * 75}
         sheetBackgroundColor="#272727"
       >
         <View>
@@ -135,9 +200,14 @@ const Right = ({ item }) => {
             </View>
             <View>
               <FlatList
-                data={send}
-                keyExtractor={(item) => item.id}
+                data={dataAuctionInPost}
                 renderItem={renderItem}
+                keyExtractor={(_item, index) => index.toString()}
+                horizontal={false}
+                ref={flatListRef}
+                numColumns={1}
+                showsVerticalScrollIndicator={false}
+                nestedScrollEnabled={true} // Set nestedScrollEnabled to true
               />
             </View>
 
@@ -154,25 +224,25 @@ const Right = ({ item }) => {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                borderWidth: 1, 
-                borderColor: '#3a3a3a', 
-                borderRadius: 50, 
-                padding: 5, 
-                width:350,
-                }}>
+                borderWidth: 1,
+                borderColor: '#3a3a3a',
+                borderRadius: 50,
+                padding: 5,
+                width: 350,
+              }}>
 
                 <TextInput
                   placeholder={`Comment under the name you want ...`}
                   placeholderTextColor="#969696"
                   style={styles.input}
                   value={commentText}
-                  multiline 
+                  multiline
                   onChangeText={setCommentText}
                 />
                 {!commentText.length ? (
-                  <Text style={{ color: '#254253', marginLeft: -60, marginRight:10 }}>Đăng</Text>
+                  <Text style={{ color: '#254253', marginLeft: -60, marginRight: 10 }}>Đăng</Text>
                 ) : (
-                  <Text style={{ color: '#0096fd', marginLeft: -60 , marginRight:10 }} >Đăng</Text>
+                  <Text style={{ color: '#0096fd', marginLeft: -60, marginRight: 10 }} onPress={handleUploadImage} >Đăng</Text>
                 )}
               </View>
 
@@ -189,7 +259,7 @@ const Right = ({ item }) => {
         color="white"
         style={styles.icons}
       />
-      <Image source={item.image} style={styles.imageBottom} />
+      <Image source={{ uri: item?.img }} style={styles.imageBottom} />
     </View>
   );
 };
@@ -199,8 +269,8 @@ const Left = ({ item }) => {
   return (
     <View style={{ zIndex: 1, justifyContent: 'flex-end' }}>
       <View style={styles.footer}>
-        <Image style={styles.image} source={item.image} />
-        <Text style={styles.user}>{item.user}</Text>
+        <Image style={styles.image} source={{ uri: item?.user?.img }} />
+        <Text style={styles.user}>{item?.user?.fullname}</Text>
         <TouchableOpacity
           onPress={() => setFollow(!follow)}
           style={{
@@ -219,7 +289,7 @@ const Left = ({ item }) => {
         </TouchableOpacity>
       </View>
       <View>
-        <Text style={styles.explanation}>{item.explanation}</Text>
+        <Text style={styles.explanation}>{item?.description}</Text>
       </View>
       <View style={styles.sound}>
         <AnimatedLottieView
@@ -227,9 +297,9 @@ const Left = ({ item }) => {
           autoPlay
           style={{ width: 24, height: 24 }}
         />
-        <Text style={styles.soundText}>{item.user}</Text>
+        <Text style={styles.soundText}>Bắt đầu {item?.minPoint}</Text>
         <Entypo name="dot-single" size={15} color="white" />
-        <Text style={styles.soundText}>Nội dung âm thanh gốc</Text>
+        <Text style={styles.soundText}>Bước nhảy {item?.bidStep}</Text>
       </View>
     </View>
   );

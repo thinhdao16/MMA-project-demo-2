@@ -14,6 +14,7 @@ function StoreSelect() {
                     navigation.navigate('Store');
                 }}
             >
+                
                 <Ionicons name="add-circle-outline" size={24} color="#fff" />
                 <Text style={styles.buttonText}>Store</Text>
             </TouchableOpacity>

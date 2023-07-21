@@ -25,6 +25,7 @@ import styles from "../../components/HomeComponents/HomeComponents.style";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
+import axios from "axios";
 
 const SinglePost = () => {
     const navigation = useNavigation();
@@ -40,43 +41,51 @@ const SinglePost = () => {
         fetchAllData,
         userProfile,
         postingPushPublished,
+        setIsLoading,
     } = React.useContext(AuthContext);
-
     const [isConfirmed, setIsConfirmed] = useState(false);
-    const [reportPostText, setReportPostText] = useState("");
-    const [isModalVisible, setModalVisible] = useState(false);
-    const [dataReportPost, setDataReportPost] = useState("");
     const [offerPost, setOfferPost] = useState("");
-    const [chooseOffer, setChooseOffer] = useState("");
     const [selectedItemId, setSelectedItemId] = useState(null);
+    const [isPendingUpdated, setIsPendingUpdated] = useState(null);
+    const [dataOfferPost, setDataOfferPost] = useState("")
+    React.useEffect(() => {
+        if (singlePage) {
+            setIsLoading(false)
+            axios
+                .get(
+                    `https://trading-stuff-be-iphg.vercel.app/offer/post/${singlePage?._id}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken.accessToken}`,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                )
+                .then((response) => {
+                    ToastAndroid.show("Đây là bài viết của bạn !", ToastAndroid.SHORT);
+                    const pendingOffers = response.data.data.filter((item) => item.status === "pending");
+                    setDataOfferPost(pendingOffers);
+                    fetchAllData(accessToken.accessToken);
+                })
+                .catch((error) => {
+                    console.log("error", error)
+                    ToastAndroid.show("Nothing", ToastAndroid.SHORT);
+                })
+                .finally((loading) => {
+                    setIsLoading(false)
+                })
+        }
+    }, [singlePage, isPendingUpdated])
+
     const handleOpenBottomSheet = (data) => {
         bottomSheet.current.show();
         setOfferPost(data);
     };
-    const toggleModalReport = (data) => {
-        setModalVisible(!isModalVisible);
-        setDataReportPost(data);
-    };
-    const handlePress = (id) => {
-        if (isConfirmed) {
-            // Gửi dữ liệu lên server
-            sendDataToServerPost(id);
-        } else {
-            Alert.alert("Xác nhận", "Bạn có chắc chắn muốn không", [
-                { text: "Hủy", style: "cancel" },
-                { text: "Xác nhận", onPress: () => setIsConfirmed(true) },
-            ]);
-        }
-    };
-    const sendDataToServerPost = async (id) => {
-        console.log("Gửi dữ liệu lên ", id);
+
+    const handleApprovedOffer = async (id) => {
         axios
-            .post(
-                "https://trading-stuff-be-iphg.vercel.app/post/exchange",
-                {
-                    id: id,
-                    message: "app qua hoan hoa",
-                },
+            .put(
+                `https://trading-stuff-be-iphg.vercel.app/offer/approve/${selectedItemId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${accessToken.accessToken}`,
@@ -86,46 +95,12 @@ const SinglePost = () => {
             )
             .then((response) => {
                 ToastAndroid.show("Bạn tương tác thành công!", ToastAndroid.SHORT);
+                setIsPendingUpdated((prev) => !prev);
                 fetchAllData(accessToken.accessToken);
+
             })
             .catch((error) => {
                 ToastAndroid.show("Bạn không đủ điểm", ToastAndroid.SHORT);
-            });
-    };
-    const handleReport = (id) => {
-        if (isConfirmed) {
-            // Gửi dữ liệu lên server
-            sendDataToServerReport(id);
-        } else {
-            Alert.alert("Xác nhận", "Bạn có chắc chắn muốn không", [
-                { text: "Hủy", style: "cancel" },
-                { text: "Xác nhận", onPress: () => setIsConfirmed(true) },
-            ]);
-        }
-    };
-    const sendDataToServerReport = async (id) => {
-        console.log("Gửi dữ liệu lên ", id);
-        axios
-            .post(
-                "https://trading-stuff-be-iphg.vercel.app/report/create",
-                {
-                    postId: id,
-                    description: reportPostText,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken.accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            )
-            .then((response) => {
-                ToastAndroid.show("Bạn báo cáo thành công!", ToastAndroid.SHORT);
-                fetchAllData(accessToken.accessToken);
-            })
-            .catch((error) => {
-                console.log("error", error);
-                ToastAndroid.show("Bạn không được báo cáo", ToastAndroid.SHORT);
             });
     };
 
@@ -196,9 +171,9 @@ const SinglePost = () => {
                 }}
             >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Image source={{ uri: item?.img }} style={styles.sheetImage} />
+                    <Image source={{ uri: item?.user_id?.img }} style={styles.sheetImage} />
                     <View>
-                        <Text style={styles.sheetLabel}>{item?.user?.fullname}</Text>
+                        <Text style={styles.sheetLabel}>{item?.user_id?.fullname}</Text>
                         <Text style={{ color: "#a2a2a2" }}>{item?.point}</Text>
                     </View>
                 </View>
@@ -250,15 +225,6 @@ const SinglePost = () => {
                             />
                             <Text style={styles.title}>{singlePage?.user?.fullname}</Text>
                         </View>
-                        <TouchableOpacity
-                            key={singlePage?._id}
-                            onPress={() => {
-                                toggleModalReport(singlePage);
-                            }}
-                            style={{ alignSelf: "center", marginRight: 15 }}
-                        >
-                            <Feather name="more-vertical" size={20} color="#F5F5F5" />
-                        </TouchableOpacity>
                     </View>
                     <Text style={styles.pointPost}>{singlePage?.typePost}</Text>
                 </View>
@@ -334,7 +300,7 @@ const SinglePost = () => {
                         <BottomSheet
                             hasDraggableIcon
                             ref={bottomSheet}
-                            height={100 + postingPushPublished?.length * 65}
+                            height={50 + postingPushPublished?.length * 50}
                             sheetBackgroundColor="#262626"
                         >
                             <View>
@@ -362,7 +328,7 @@ const SinglePost = () => {
                                                 <FlatList
                                                     ref={flatListRef}
                                                     horizontal={false}
-                                                    data={postingPushPublished}
+                                                    data={dataOfferPost}
                                                     keyExtractor={(_item, index) => index.toString()}
                                                     renderItem={renderItem}
                                                     numColumns={1}
@@ -380,11 +346,20 @@ const SinglePost = () => {
                                         >
                                             <TouchableOpacity
                                                 onPress={() => {
-                                                    handleReport(offerPost?._id);
+                                                    handleApprovedOffer(offerPost?._id);
                                                 }}
                                                 style={styles.btnImagePost}
                                             >
-                                                <Text style={{ color: "white", fontWeight: "700", fontSize: 17 }}>Báo cáo</Text>
+                                                <Text style={{ color: "white", fontWeight: "700", fontSize: 17 }}>Đồng ý</Text>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    handleReport(offerPost?._id);
+                                                }}
+                                                style={styles.btnImageReOf}
+                                            >
+                                                <Text style={{ color: "white", fontWeight: "700", fontSize: 17 }}>Loại bỏ</Text>
                                             </TouchableOpacity>
                                         </View>
                                     </View>
@@ -392,31 +367,6 @@ const SinglePost = () => {
                             </View>
                         </BottomSheet>
 
-                    </View>
-                    <View>
-                        {singlePage?.user._id === userProfile._id ? null : (
-                            <TouchableOpacity
-                                onPress={() => {
-                                    handlePress(singlePage?._id);
-                                }}
-                            >
-                                <View
-                                    style={{
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        marginRight: 20,
-                                    }}
-                                >
-                                    <Text style={{ color: "white" }}>{singlePage?.point}</Text>
-                                    {singlePage?.typePost === "receive" && (
-                                        <AntDesign name="plus" color="#48cb61" size={18} />
-                                    )}
-                                    {singlePage?.typePost === "give" && (
-                                        <AntDesign name="minus" color="#ff0000" size={18} />
-                                    )}
-                                </View>
-                            </TouchableOpacity>
-                        )}
                     </View>
                 </View>
 
@@ -510,117 +460,6 @@ const SinglePost = () => {
 
                 {/*end modal */}
             </View>
-            <Modal isVisible={isModalVisible} style={{ maxHeight: 900 }}>
-                <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                    <View
-                        style={{
-                            flex: 1,
-                            backgroundColor: "#1c1c24",
-                            borderRadius: 28,
-                            ...Platform.select({
-                                ios: {
-                                    shadowColor: "black",
-                                    shadowOffset: { width: 0, height: 2 },
-                                    shadowOpacity: 0.25,
-                                    shadowRadius: 4,
-                                },
-                                android: {
-                                    elevation: 5,
-                                },
-                            }),
-                        }}
-                    >
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "flex-end",
-                                alignItems: "center",
-                                padding: 10,
-                            }}
-                        >
-                            <FontAwesome
-                                name="times-circle"
-                                size={40}
-                                color="white"
-                                onPress={toggleModalReport}
-                            />
-                        </View>
-
-                        <View style={{ flex: 1 }}>
-                            <View style={{ marginBottom: 5 }}>
-                                <View style={styles.top}>
-                                    <View style={styles.topleft}>
-                                        <Image
-                                            source={{ uri: dataReportPost?.user?.img }}
-                                            style={styles.profilImage}
-                                        />
-                                        <Text style={styles.title}>
-                                            {dataReportPost?.user?.fullname}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <Text style={styles.pointPost}>{dataReportPost?.typePost}</Text>
-                            </View>
-                            <View style={{ justifyContent: "center", alignItems: "center" }}>
-                                <Image
-                                    style={styles.image_bank}
-                                    source={{ uri: dataReportPost?.img }}
-                                />
-                            </View>
-                            <View
-                                style={{ flexDirection: "row", marginTop: 5, marginBottom: 10 }}
-                            >
-                                <Text style={styles.postName}>
-                                    {dataReportPost?.user?.fullname}
-                                </Text>
-                                <Text style={{ color: "white", marginTop: 2 }}>
-                                    {" "}
-                                    {dataReportPost?.description}
-                                </Text>
-                            </View>
-
-                            <Text style={{ color: "#393949", fontSize: 18, marginLeft: 14 }}>
-                                Description report:
-                            </Text>
-                            <View>
-                                <TextInput
-                                    value={reportPostText}
-                                    onChangeText={setReportPostText}
-                                    placeholder="Input report"
-                                    placeholderTextColor="grey"
-                                    style={styles.textInput}
-                                />
-                                <Feather
-                                    name="flag"
-                                    size={20}
-                                    color="white"
-                                    style={styles.iconInput}
-                                />
-                            </View>
-                            <View
-                                style={{
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    marginTop: 15,
-                                }}
-                            >
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        handleReport(dataReportPost?._id);
-                                    }}
-                                    style={styles.btnImagePost}
-                                >
-                                    <Text
-                                        style={{ color: "white", fontWeight: 700, fontSize: 17 }}
-                                    >
-                                        Báo cáo
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </ScrollView>
-            </Modal>
         </Container>
     );
 };

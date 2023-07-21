@@ -10,9 +10,9 @@ const Stack = createNativeStackNavigator();
 const StoreScreen = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Store" component={Store} />
       <Stack.Screen name="StoreSelect" component={StoreSelect} />
       <Stack.Screen name="StoreAuction" component={StoreAuction} />
-      <Stack.Screen name="Store" component={Store} />
     </Stack.Navigator>
   );
 };

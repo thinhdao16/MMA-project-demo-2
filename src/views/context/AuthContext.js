@@ -18,12 +18,13 @@ export function AuthContextProvider({ children }) {
     const [postingPushPublished, setPostingPushPublished] = useState([]);
     const [postingPushLimited, setPostingPushLimited] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [auctionData, setAuctionData] = useState([])
     //data global
 
     const fetchAllData = async (accessToken) => {
         try {
             setIsLoading(true); // Bắt đầu quá trình tải dữ liệu
-console.log("do")
+            console.log("do")
             const response = await fetch(
                 "https://trading-stuff-be-iphg.vercel.app/post",
                 {
@@ -58,7 +59,6 @@ console.log("do")
                     },
                 }
             );
-
             if (response.ok) {
                 const responseData = await response.json();
                 setPostingPush(responseData.data.posts);
@@ -71,6 +71,11 @@ console.log("do")
                 setPostingPushLimited(
                     responseData.data.posts?.filter((post) => post.status === "limited")
                 );
+                if (Array.isArray(responseData.data.posts)) {
+                    setAuctionData(responseData.data.posts.filter((post) => post.typePost === "auction"));
+                } else {
+                    setAuctionData([]);
+                }
             } else {
                 console.error(`HTTP error Post! Status: ${response.status}`);
             }
@@ -127,6 +132,7 @@ console.log("do")
                 setPostingPushLimited,
                 isLoading,
                 setIsLoading,
+                auctionData, setAuctionData
             }}
         >
             {children}
