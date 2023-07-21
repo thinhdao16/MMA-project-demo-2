@@ -90,9 +90,16 @@ const Store = () => {
   const [description, setDescription] = useState('');
   const [typePost, setTypePost] = useState('')
   const [point, setPoint] = useState("");
-  const [minPoint , setMinPoint] = useState("")
+  const [minPoint, setMinPoint] = useState("")
   const [bidStep, setBidStep] = useState("")
   const [isTypePostEmpty, setIsTypePostEmpty] = useState(true);
+
+  const handleTypePostChange = (selectedItem) => {
+    setTypePost(selectedItem);
+    setMinPoint("");
+    setBidStep("");
+  };
+
 
   const handlePointChange = (text) => {
     if (isTypePostEmpty) {
@@ -251,66 +258,59 @@ const Store = () => {
                   style={styles.iconInput}
                 />
               </View>
+              {typePost === "auction" && (
+                <>
+                  <View>
+                    <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>minPoint :</Text>
+                  </View>
+                  <View>
+                    <TextInput
+                      value={minPoint}
+                      onChangeText={setMinPoint}
+                      placeholder="Input description"
+                      placeholderTextColor="grey"
+                      style={styles.textInput}
+                    />
+                    <Feather
+                      name="file-text"
+                      size={20}
+                      color="white"
+                      style={styles.iconInput}
+                    />
+                  </View>
+                  <View>
+                    <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>bidStep :</Text>
+                  </View>
+                  <View>
+                    <TextInput
+                      value={bidStep}
+                      onChangeText={setBidStep}
+                      placeholder="Input description"
+                      placeholderTextColor="grey"
+                      style={styles.textInput}
+                    />
+                    <Feather
+                      name="file-text"
+                      size={20}
+                      color="white"
+                      style={styles.iconInput}
+                    />
+                  </View>
+                </>
+              )}
               <View>
-                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18, }}>minPoint :</Text>
+                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>TypePost :</Text>
               </View>
-              <View>
-                <TextInput
-                  value={minPoint}
-                  onChangeText={setMinPoint}
-                  placeholder="Input description"
-                  placeholderTextColor="grey"
-                  style={styles.textInput}
-                />
-                <Feather
-                  name="file-text"
-                  size={20}
-                  color="white"
-                  style={styles.iconInput}
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <SelectDropdown
+                  data={countries}
+                  onSelect={(selectedItem, index) => handleTypePostChange(selectedItem)}
+                  buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+                  rowTextForSelection={(item, index) => item}
+                  dropdownStyle={{ borderRadius: 15 }}
                 />
               </View>
-              <View>
-                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18, }}>bidStep :</Text>
-              </View>
-              <View>
-                <TextInput
-                  value={bidStep}
-                  onChangeText={setBidStep}
-                  placeholder="Input description"
-                  placeholderTextColor="grey"
-                  style={styles.textInput}
-                />
-                <Feather
-                  name="file-text"
-                  size={20}
-                  color="white"
-                  style={styles.iconInput}
-                />
-              </View>
-              <View>
-                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18, marginBottom: 15 }}>TypePost :</Text>
-                <View style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                  <SelectDropdown
-                    data={countries}
-                    onSelect={(selectedItem, index) => {
-                      setTypePost(selectedItem);
-                    }}
-                    buttonTextAfterSelection={(selectedItem, index) => {
-                      return selectedItem;
-                    }}
-                    rowTextForSelection={(item, index) => {
-                      return item;
-                    }}
-                    dropdownStyle={{ borderRadius: 15 }}
-                  />
 
-                </View>
-                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>Point :</Text>
-              </View>
               <View>
                 <TextInput
                   value={point}
