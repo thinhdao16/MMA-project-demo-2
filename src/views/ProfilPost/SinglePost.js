@@ -456,6 +456,8 @@ const SinglePost = () => {
                                     allCmt: allCmt?.filter?.(
                                         (cmt) => cmt?.posting?._id === singlePage?._id
                                     ),
+                                idPost : data?._id,
+
                                     image: singlePage?.user?.img,
                                     user: singlePage?.user?.fullname,
                                     explanation: singlePage?.description,

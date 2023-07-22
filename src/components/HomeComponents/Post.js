@@ -601,6 +601,7 @@ const Post = () => {
                                 allCmt: allCmt?.filter?.(
                                   (cmt) => cmt?.posting?._id === data?._id
                                 ),
+                                idPost : data?._id,
                                 image: data?.user?.img,
                                 user: data?.user?.fullname,
                                 explanation: data?.description,

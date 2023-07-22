@@ -545,6 +545,8 @@ const SingleSearch = () => {
                                         (cmt) => cmt?.posting?._id === singlePage?._id
                                     ),
                                     image: singlePage?.user?.img,
+                                idPost : data?._id,
+
                                     user: singlePage?.user?.fullname,
                                     explanation: singlePage?.description,
                                 },
