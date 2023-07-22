@@ -43,6 +43,7 @@ const Message = ({ navigation }) => {
       .catch((error) => {
         console.log(error);
         ToastAndroid.show("Hóa đơn chưa hoàn thành", ToastAndroid.SHORT);
+        console.log(error)
       })
   };
   const handleDeleteTransaction = (id) => {

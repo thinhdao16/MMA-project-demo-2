@@ -15,6 +15,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import DoubleTap from "react-native-double-tap";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AwesomeAlert from 'react-native-awesome-alerts';
+import BottomSheet from "react-native-gesture-bottom-sheet";
 
 
 import Container from "../../components/Container/Container";
@@ -27,8 +28,6 @@ import axios from "axios";
 
 const SingleSearch = () => {
     const navigation = useNavigation();
-    const bottomSheet = React.useRef();
-
 
     const {
         singlePage,
@@ -37,17 +36,26 @@ const SingleSearch = () => {
         accessToken,
         fetchAllData,
         userProfile,
+        setIsLoading,
     } = React.useContext(AuthContext);
     console.log("singlesearch", singlePage);
+    const [offerPost, setOfferPost] = useState("")
     const [isConfirmed, setIsConfirmed] = useState(false);
     const [reportPostText, setReportPostText] = useState("");
     const [isModalVisible, setModalVisible] = useState(false);
     const [dataReportPost, setDataReportPost] = useState("");
-
+    const [offerPostText, setOfferPostText] = useState("")
 
     const [showReportAlert, setShowReportAlert] = useState(false);
     const [reportConfirmation, setReportConfirmation] = useState(false);
     const [showConfirmationAlert, setShowConfirmationAlert] = useState(false);
+    const unReport = singlePage?.user?._id === userProfile?._id
+
+    const bottomSheet = React.useRef();
+    const handleOpenBottomSheet = (data) => {
+        bottomSheet.current.show();
+        setOfferPost(data)
+    };
 
     const toggleModalReport = (data) => {
         setModalVisible(!isModalVisible);
@@ -157,6 +165,55 @@ const SingleSearch = () => {
                 console.error("Failed to add Dislike", error);
             });
     };
+    const updateOfferPostText = (text) => {
+        if (text === "") {
+            setOfferPostText("");
+        } else {
+            const numericText = parseFloat(text);
+
+            if (!isNaN(numericText) && numericText > 0 && numericText < offerPost.point) {
+                setOfferPostText(text);
+            } else {
+                if (!isNaN(numericText) && numericText >= offerPost.point) {
+                    setOfferPostText((offerPost.point - 1).toString());
+                } else {
+                    console.log("Invalid input. Please enter a number greater than 0 and less than the point value.");
+                }
+            }
+        }
+    };
+    const sendOffer = async (id) => {
+        console.log("Gửi dữ liệu lên ", id);
+        setIsLoading(false)
+        axios
+            .post(
+                "https://trading-stuff-be-iphg.vercel.app/offer/create",
+                {
+                    postId: id,
+                    description: offerPostText,
+                    point: offerPostText
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken.accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            )
+            .then((response) => {
+                ToastAndroid.show("Trả giá đã được gửi!", ToastAndroid.SHORT);
+                fetchAllData(accessToken.accessToken);
+                setOfferPostText("")
+            })
+            .catch((error) => {
+                console.log("error", error)
+                ToastAndroid.show("Trả chưa được gửi", ToastAndroid.SHORT);
+                setOfferPostText("")
+            })
+            .finally((loading) => {
+                setIsLoading(false)
+            })
+    };
     const timeDiff = moment().diff(singlePage?.updatedAt);
     const duration = moment.duration(timeDiff);
 
@@ -202,13 +259,16 @@ const SingleSearch = () => {
                             />
                             <Text style={styles.title}>{singlePage?.user?.fullname}</Text>
                         </View>
-                        <TouchableOpacity
-                            key={singlePage?._id}
-                            onPress={() => { toggleModalReport(singlePage) }}
-                            style={{ alignSelf: "center", marginRight: 15 }}
-                        >
-                            <Feather name="more-vertical" size={20} color="#F5F5F5" />
-                        </TouchableOpacity>
+                        {!unReport && (
+                            <TouchableOpacity
+                                key={singlePage?._id}
+                                onPress={() => { toggleModalReport(singlePage) }}
+                                style={{ alignSelf: "center", marginRight: 15 }}
+                            >
+                                <Feather name="more-vertical" size={20} color="#F5F5F5" />
+                            </TouchableOpacity>
+                        )}
+
                     </View>
                     <Text style={styles.pointPost}>{singlePage?.typePost}</Text>
                 </View>
@@ -277,12 +337,122 @@ const SingleSearch = () => {
                         >
                             <Feather name="message-circle" size={24} color="white" />
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => bottomSheet.current.show()}
+                        {!unReport ? (<TouchableOpacity
+                            key={singlePage?._id}
+                            onPress={() => handleOpenBottomSheet(singlePage)}
                         >
                             <Feather name="send" size={24} color="white" />
-                        </TouchableOpacity>
+                        </TouchableOpacity>) : (
+                            <TouchableOpacity
+                            >
+                                <Feather name="send" size={24} color="black" />
+                            </TouchableOpacity>
+                        )}
                     </View>
+                    <BottomSheet
+                        hasDraggableIcon
+                        ref={bottomSheet}
+                        height={660}
+                        sheetBackgroundColor="#262626"
+                    >
+
+                        <View>
+                            <View>
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginTop: 10 }}>Trả giá</Text>
+                                </View>
+                            </View>
+                            <View>
+                                <View>
+                                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                        <Image source={{ uri: offerPost?.user?.img }} style={styles.sheetImage} />
+                                        <View>
+                                            <Text style={styles.sheetLabel}>{offerPost?.user?.fullname}</Text>
+                                            <Text style={{ color: "#a2a2a2", fontWeight: 800 }}>Point: {offerPost?.point}</Text>
+                                        </View>
+                                    </View>
+                                    <ScrollView>
+                                        <View
+                                            style={{ justifyContent: "center", alignItems: "center", }}
+                                        >
+                                            <Image
+                                                style={{
+                                                    height: 350,
+                                                    width: 370,
+                                                    resizeMode: 'contain',
+                                                    margin: 5,
+                                                    alignItems: 'center',
+                                                    borderRadius: 20,
+                                                }}
+                                                source={{ uri: offerPost?.img }}
+                                            />
+                                        </View>
+                                        <View
+                                            style={{
+                                                flexDirection: "row",
+                                                marginTop: 5,
+                                                marginBottom: 10,
+                                            }}
+                                        >
+                                            <Text style={styles.postName}>
+                                                {offerPost?.user?.fullname}
+                                            </Text>
+                                            <Text style={{ color: "white", marginTop: 2 }}>
+                                                {" "}
+                                                {offerPost?.description}
+                                            </Text>
+                                        </View>
+
+                                        <Text
+                                            style={{ color: "#393949", fontSize: 18, marginLeft: 14 }}
+                                        >
+                                            Trả giá (gốc : {offerPost?.point})
+                                        </Text>
+                                        <View>
+                                            <TextInput
+                                                value={offerPostText}
+                                                onChangeText={(text) => updateOfferPostText(text)}
+                                                keyboardType="numeric"
+                                                placeholder="Input report"
+                                                placeholderTextColor="grey"
+                                                style={styles.textInputReport}
+                                            />
+                                            <Feather
+                                                name="flag"
+                                                size={20}
+                                                color="white"
+                                                style={styles.iconInput}
+                                            />
+                                        </View>
+                                    </ScrollView>
+                                    <View
+                                        style={{
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            // marginTop: 15,
+                                        }}
+                                    >
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                sendOffer(offerPost?._id);
+                                            }}
+                                            style={styles.btnImagePostOffer}
+                                        >
+                                            <Text
+                                                style={{
+                                                    color: "white",
+                                                    fontWeight: 700,
+                                                    fontSize: 17,
+                                                }}
+                                            >
+                                                Trả giá
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                    </BottomSheet>
                     <View>
                         {singlePage?.user._id === userProfile._id ? null : (
                             <TouchableOpacity

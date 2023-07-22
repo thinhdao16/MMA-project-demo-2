@@ -65,6 +65,7 @@ const Right = ({ item }) => {
   const [auctionPost, setAuctionPost] = useState("");
   const flatListRef = React.useRef(null);
   const [dataAuctionInPost, setDataAuctionInPost] = useState("")
+  console.log(dataAuctionInPost)
   const isAuctionUser = auctionPost[0]?.user?._id === userProfile?._id;
   const auctionStatus = dataAuctionInPost[0]?.status === "done"
   const bidders = dataAuctionInPost[0]?.bidders;

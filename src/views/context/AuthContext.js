@@ -21,7 +21,6 @@ export function AuthContextProvider({ children }) {
     const [auctionData, setAuctionData] = useState([])
     const [transactions, setTransactions] = useState([])
     //data global
-
     const fetchAllData = async (accessToken) => {
         try {
             setIsLoading(true); // Bắt đầu quá trình tải dữ liệu

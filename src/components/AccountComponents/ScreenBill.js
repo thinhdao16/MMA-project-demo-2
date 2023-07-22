@@ -8,8 +8,7 @@ import data from "../../storage/database/post";
 
 const ScreenBill = () => {
     const { userProfile, accessToken } = React.useContext(AuthContext);
-    const [invoice, setInvoice] = React.useState("");
-    console.log("in", invoice)
+    const [invoice, setInvoice] = React.useState([]);
     React.useEffect(() => {
         if (userProfile) {
             axios
@@ -43,8 +42,8 @@ const ScreenBill = () => {
                 </DataTable.Header>
                 {/* {invoice?.map((data) => {
                     < DataTable.Row >
-                        <DataTable.Cell>{data?._id}</DataTable.Cell>
-                        <DataTable.Cell>{data?._id}</DataTable.Cell>
+                        <DataTable.Cell>s</DataTable.Cell>
+                        <DataTable.Cell>s</DataTable.Cell>
                         <DataTable.Cell>john@kindacode.com</DataTable.Cell>
                         <DataTable.Cell numeric>33</DataTable.Cell>
                     </DataTable.Row>
