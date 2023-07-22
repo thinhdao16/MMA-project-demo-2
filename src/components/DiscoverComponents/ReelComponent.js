@@ -58,13 +58,15 @@ const Reel = ({ item }) => {
 };
 const Right = ({ item }) => {
   const itemArray = [item]
-  const { setIsLoading, accessToken, fetchAllData ,userProfile} = useContext(AuthContext)
+  const { setIsLoading, accessToken, fetchAllData, userProfile } = useContext(AuthContext)
   const [isPendingUpdated, setIsPendingUpdated] = useState(null);
   const [like, setLike] = useState(item.islike);
   const [commentText, setCommentText] = useState('');
   const [auctionPost, setAuctionPost] = useState("");
   const flatListRef = React.useRef(null);
   const [dataAuctionInPost, setDataAuctionInPost] = useState("")
+
+  const isAuctionUser = auctionPost[0]?.user?._id === userProfile?._id;
 
   const bidders = dataAuctionInPost[0]?.bidders;
   const maxBidAmount = bidders?.reduce((max, bidder) => {
@@ -76,15 +78,23 @@ const Right = ({ item }) => {
     }
     return max;
   }, 0);
-  const plusBid = dataAuctionInPost[0]?.bidStep + dataAuctionInPost[0]?.minPoint + maxBidAmount - maxBidAmountUser 
 
-  console.log(plusBid); 
+  const plusBid = dataAuctionInPost[0]?.bidStep +
+    (bidders?.some(bidder => bidder.user?._id === userProfile?._id) ? 0 : dataAuctionInPost[0]?.minPoint) +
+    maxBidAmount - maxBidAmountUser;
+
+
   const handleOpenBottomSheet = (data) => {
     bottomSheet.current.show();
     setAuctionPost(data);
   };
   const bottomSheet = useRef();
 
+  const handleChangeText = (text) => {
+    if (!isAuctionUser) {
+      setCommentText(text);
+    }
+  };
   React.useEffect(() => {
     if (auctionPost) {
       setIsLoading(false)
@@ -132,8 +142,8 @@ const Right = ({ item }) => {
           },
         }
       );
-      fetchAllData(accessToken.accessToken)
       ToastAndroid.show('Đấu giá thành công !', ToastAndroid.SHORT);
+      setIsPendingUpdated((pre) => !pre);
       setCommentText('')
     } catch (error) {
       console.log(error)
@@ -153,6 +163,7 @@ const Right = ({ item }) => {
       </View>
     );
   }
+  console.log(auctionPost)
   return (
     <View style={styles.right}>
       <TouchableOpacity onPress={() => setLike(!like)}>
@@ -182,10 +193,18 @@ const Right = ({ item }) => {
             <View>
               <View>
                 <View style={{ alignItems: 'center' }}>
-                  <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginTop: 10 }}>Đấu giá</Text>
+                  <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginTop: 20 }}>Đấu giá</Text>
                 </View>
               </View>
             </View>
+            {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image source={{ uri: auctionPost[0]?.user?.img }} style={styles.sheetImage} />
+              <View>
+                <Text style={styles.sheetLabel}>{auctionPost[0]?.user?.fullname}</Text>
+                <Text style={{ color: '#a2a2a2' }}>Nhỏ nhất: {auctionPost[0]?.minPoint}</Text>
+              </View>
+            </View> */}
+          <View style={styles.line} />
             <View>
               <FlatList
                 data={dataAuctionInPost[0]?.bidders}
@@ -201,6 +220,11 @@ const Right = ({ item }) => {
 
           </View>
           <View style={styles.line} />
+          <View style={{ alignItems: 'center', margin: 10 }}>
+            {plusBid !== undefined && (
+              <Text style={{ color: "white", width: 380 }}>{`Bạn cần nhập lớn hơn hoặc bằng: ${plusBid} nếu thêm cộng chia hết cho ${dataAuctionInPost[0]?.bidStep}`}</Text>
+            )}
+          </View>
 
           <View style={styles.bottom}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -225,18 +249,19 @@ const Right = ({ item }) => {
                   style={styles.input}
                   value={commentText}
                   multiline
-                  onChangeText={setCommentText}
+                  onChangeText={handleChangeText}
                   keyboardType="numeric"
                 />
+
                 {!commentText.length ? (
                   <Text style={{ color: '#254253', marginLeft: -60, marginRight: 10 }}>Đăng</Text>
                 ) : (
                   <Text style={{ color: '#0096fd', marginLeft: -60, marginRight: 10 }} onPress={handleUploadImage} >Đăng</Text>
                 )}
               </View>
-
             </View>
           </View>
+
         </View>
 
       </BottomSheet>
