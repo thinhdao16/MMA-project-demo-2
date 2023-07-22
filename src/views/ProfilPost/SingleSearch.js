@@ -514,7 +514,6 @@ const SingleSearch = () => {
             </Modal>
 
             <AwesomeAlert
-
                 show={showReportAlert}
                 showProgress={false}
                 title="Xác nhận"
@@ -546,7 +545,6 @@ const SingleSearch = () => {
                     color: 'black',
                     fontSize: 18,
                 }}
-
             />
 
 
