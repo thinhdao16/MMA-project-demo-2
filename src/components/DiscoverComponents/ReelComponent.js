@@ -204,7 +204,7 @@ const Right = ({ item }) => {
                 <Text style={{ color: '#a2a2a2' }}>Nhỏ nhất: {auctionPost[0]?.minPoint}</Text>
               </View>
             </View> */}
-          <View style={styles.line} />
+            <View style={styles.line} />
             <View>
               <FlatList
                 data={dataAuctionInPost[0]?.bidders}
