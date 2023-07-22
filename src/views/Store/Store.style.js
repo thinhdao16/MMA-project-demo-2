@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   btnSubmit: {
     backgroundColor: 'white',
-    height: 32,
+    height: 38,
     margin: 10,
     marginTop: 2,
     borderRadius: 10,
@@ -109,13 +109,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 15,
     marginBottom: 10,
-    width: 50,
-    
+    width: 80,
+
   },
   submit: {
     color: 'black',
     fontSize: 15,
     fontWeight: 'bold',
+  },
+  dropdow: {
+    backgroundColor: 'red'
   }
 });
+
+
 export default styles;

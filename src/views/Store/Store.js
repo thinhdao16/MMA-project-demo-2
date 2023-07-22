@@ -263,10 +263,16 @@ const Store = () => {
               <View>
                 <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>TypePost :</Text>
               </View>
-              <View style={{
-                flex: 1, justifyContent: 'center', alignItems: 'center'
-              }}>
+
+
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
+
                 <SelectDropdown
+                  buttonStyle={{
+                    // backgroundColor: "#445de2",
+                    borderRadius: 15,
+                    width: 250
+                  }}
                   data={countries}
                   onSelect={(selectedItem, index) => handleTypePostChange(selectedItem)}
                   buttonTextAfterSelection={(selectedItem, index) => selectedItem}
@@ -275,10 +281,8 @@ const Store = () => {
                 />
               </View>
 
-              {/* Conditional rendering for minPoint and bidStep based on typePost */}
               {typePost === "auction" ? (
                 <>
-                  {/* minPoint */}
                   <View>
                     <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>minPoint :</Text>
                   </View>
@@ -298,7 +302,6 @@ const Store = () => {
                     />
                   </View>
 
-                  {/* bidStep */}
                   <View>
                     <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>bidStep :</Text>
                   </View>
@@ -319,7 +322,6 @@ const Store = () => {
                   </View>
                 </>
               ) : (
-                // Render point field when typePost is not "auction"
                 <>
                   <View>
                     <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>Point :</Text>
@@ -343,7 +345,6 @@ const Store = () => {
                 </>
               )}
 
-              {/* Submit Button */}
               <View style={{
                 flex: 1,
                 justifyContent: 'center',
