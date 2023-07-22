@@ -41,14 +41,14 @@ const ScreenBill = () => {
                     <DataTable.Title numeric>Point</DataTable.Title>
 
                 </DataTable.Header>
-                {invoice?.map((data) => {
+                {/* {invoice?.map((data) => {
                     < DataTable.Row >
                         <DataTable.Cell>{data?._id}</DataTable.Cell>
                         <DataTable.Cell>{data?._id}</DataTable.Cell>
                         <DataTable.Cell>john@kindacode.com</DataTable.Cell>
                         <DataTable.Cell numeric>33</DataTable.Cell>
                     </DataTable.Row>
-                })}
+                })} */}
 
             </DataTable>
         </View >
