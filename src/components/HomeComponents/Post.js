@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
-  FlatList,
   Image,
   RefreshControl,
   ScrollView,
@@ -21,26 +19,15 @@ import { useNavigation } from "@react-navigation/native";
 import DoubleTap from "react-native-double-tap";
 import AwesomeAlert from 'react-native-awesome-alerts';
 
-import send from "../../storage/database/message";
-import data from "../../storage/database/post";
 
 import styles from "./HomeComponents.style";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../../views/context/AuthContext";
 import axios from "axios";
 import moment from "moment";
 
 const Post = () => {
 
-  const showAwesomeAlert = (title, message, onConfirm) => {
-    setShowReportAlert(true);
-    setAlertTitle(title);
-    setAlertMessage(message);
-    setAlertOnConfirm(() => {
-      onConfirm();
-      setShowReportAlert(false);
-    });
-  };
+
 
   const bottomSheet = useRef();
   const {
@@ -54,7 +41,6 @@ const Post = () => {
     isLoading, setIsLoading
   } = React.useContext(AuthContext);
   const navigation = useNavigation();
-  const [isConfirmed, setIsConfirmed] = useState(false)
   const [isConfirmedPost, setIsConfirmedPost] = useState(false);
   const [reportPostText, setReportPostText] = useState('')
   const [isModalVisible, setModalVisible] = useState(false);
@@ -63,7 +49,9 @@ const Post = () => {
   const [offerPostText, setOfferPostText] = useState("")
 
   const [showReportAlert, setShowReportAlert] = useState(false);
-  const [reportConfirmation, setReportConfirmation] = useState(false)
+  const [reportConfirmation, setReportConfirmation] = useState(false);
+  const [showConfirmationAlert, setShowConfirmationAlert] = useState(false);
+
 
   const updateOfferPostText = (text) => {
     if (text === "") {
@@ -90,17 +78,17 @@ const Post = () => {
     bottomSheet.current.show();
     setOfferPost(data)
   };
+
   const handlePress = (id) => {
     if (isConfirmedPost) {
       // Gửi dữ liệu lên server
       sendDataToServerPost(id);
     } else {
-      Alert.alert("Xác nhận", "Bạn có chắc chắn muốn không", [
-        { text: "Hủy", style: "cancel" },
-        { text: "Xác nhận", onPress: () => setIsConfirmedPost(true) },
-      ]);
+      setShowConfirmationAlert(true); // Show the AwesomeAlert for post confirmation
     }
   };
+
+
   const sendDataToServerPost = (id) => {
     axios
       .post(
@@ -710,7 +698,8 @@ const Post = () => {
         </View>
       )}
       <AwesomeAlert
-        show={showReportAlert} // Sử dụng state để điều khiển hiển thị AwesomeAlert
+
+        show={showReportAlert}
         showProgress={false}
         title="Xác nhận"
         message="Bạn có chắc chắn muốn không?"
@@ -721,11 +710,11 @@ const Post = () => {
         cancelText="Hủy"
         confirmText="Xác nhận"
         confirmButtonColor="#DD6B55"
-        onCancelPressed={() => setShowReportAlert(false)} // Ẩn AwesomeAlert khi nhấn nút "Hủy"
+        onCancelPressed={() => setShowReportAlert(false)}
         onConfirmPressed={() => {
           sendDataToServerReport(dataReportPost?._id);
-          setReportConfirmation(true); // Đặt state xác nhận báo cáo thành true khi nhấn nút "Xác nhận"
-          setShowReportAlert(false); // Ẩn AwesomeAlert khi nhấn nút "Xác nhận"
+          setReportConfirmation(true);
+          setShowReportAlert(false);
         }}
         alertContainerStyle={{
           borderRadius: 20,
@@ -741,9 +730,42 @@ const Post = () => {
           color: 'black',
           fontSize: 18,
         }}
-      // confirmButtonTextStyle={{
-      //   fontSize: 15,
-      // }}
+
+      />
+
+      <AwesomeAlert
+        title="Xác nhận"
+        showProgress={false}
+
+        message="Bạn có chắc chắn muốn không?"
+        cancelText="Hủy"
+        confirmText="Xác nhận"
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+        showCancelButton={true}
+        showConfirmButton={true}
+        confirmButtonColor="#DD6B55"
+        show={showConfirmationAlert}
+        onCancelPressed={() => setShowConfirmationAlert(false)}
+        onConfirmPressed={() => {
+          sendDataToServerPost(dataReportPost?._id);
+          setIsConfirmedPost(true);
+          setShowConfirmationAlert(false);
+        }}
+        alertContainerStyle={{
+          borderRadius: 20,
+          paddingHorizontal: 20,
+          paddingVertical: 30,
+        }}
+        titleStyle={{
+          color: 'black',
+          fontSize: 24,
+          fontWeight: 'bold',
+        }}
+        messageStyle={{
+          color: 'black',
+          fontSize: 18,
+        }}
       />
     </View>
 

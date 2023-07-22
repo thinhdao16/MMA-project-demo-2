@@ -241,7 +241,7 @@ const Store = () => {
                 />
               </TouchableOpacity>
               <View>
-                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18, }}>Description :</Text>
+                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>Description :</Text>
               </View>
               <View>
                 <TextInput
@@ -258,7 +258,30 @@ const Store = () => {
                   style={styles.iconInput}
                 />
               </View>
-              {typePost === "auction" && (
+
+              {/* TypePost */}
+              <View>
+                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>TypePost :</Text>
+              </View>
+
+
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
+
+                <SelectDropdown
+                  buttonStyle={{
+                    // backgroundColor: "#445de2",
+                    borderRadius: 15,
+                    width: 250
+                  }}
+                  data={countries}
+                  onSelect={(selectedItem, index) => handleTypePostChange(selectedItem)}
+                  buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+                  rowTextForSelection={(item, index) => item}
+                  dropdownStyle={{ borderRadius: 15 }}
+                />
+              </View>
+
+              {typePost === "auction" ? (
                 <>
                   <View>
                     <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>minPoint :</Text>
@@ -278,6 +301,7 @@ const Store = () => {
                       style={styles.iconInput}
                     />
                   </View>
+
                   <View>
                     <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>bidStep :</Text>
                   </View>
@@ -297,36 +321,29 @@ const Store = () => {
                     />
                   </View>
                 </>
+              ) : (
+                <>
+                  <View>
+                    <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>Point :</Text>
+                  </View>
+                  <View>
+                    <TextInput
+                      value={point}
+                      onChangeText={handlePointChange}
+                      placeholder="Input point"
+                      placeholderTextColor="grey"
+                      style={styles.textInput}
+                      keyboardType="numeric"
+                    />
+                    <Feather
+                      name="file-text"
+                      size={20}
+                      color="white"
+                      style={styles.iconInput}
+                    />
+                  </View>
+                </>
               )}
-              <View>
-                <Text style={{ color: "#393949", fontSize: 18, marginLeft: 18 }}>TypePost :</Text>
-              </View>
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <SelectDropdown
-                  data={countries}
-                  onSelect={(selectedItem, index) => handleTypePostChange(selectedItem)}
-                  buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-                  rowTextForSelection={(item, index) => item}
-                  dropdownStyle={{ borderRadius: 15 }}
-                />
-              </View>
-
-              <View>
-                <TextInput
-                  value={point}
-                  onChangeText={handlePointChange}
-                  placeholder="Input point"
-                  placeholderTextColor="grey"
-                  style={styles.textInput}
-                  keyboardType="numeric"
-                />
-                <Feather
-                  name="file-text"
-                  size={20}
-                  color="white"
-                  style={styles.iconInput}
-                />
-              </View>
 
               <View style={{
                 flex: 1,
@@ -340,7 +357,6 @@ const Store = () => {
                   <Text style={styles.submit}>Gửi</Text>
                 </TouchableOpacity>
               </View>
-
             </>
           )}
         </View>
