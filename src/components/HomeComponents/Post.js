@@ -252,6 +252,9 @@ const Post = () => {
                   );
                 })
                 ?.map((data, index) => {
+
+                  const unReport = data?.user?._id === userProfile?._id
+
                   const timeDiff = moment().diff(data?.updatedAt);
                   const duration = moment.duration(timeDiff);
 
@@ -312,13 +315,16 @@ const Post = () => {
                             />
                             <Text style={styles.title}>{data?.user?.fullname}</Text>
                           </View>
-                          <TouchableOpacity
-                            key={data?._id}
-                            onPress={() => { toggleModalReport(data) }}
-                            style={{ alignSelf: "center", marginRight: 15 }}
-                          >
-                            <Feather name="more-vertical" size={20} color="#F5F5F5" />
-                          </TouchableOpacity>
+                          {!unReport && (
+                            <TouchableOpacity
+                              key={data?._id}
+                              onPress={() => { toggleModalReport(data) }}
+                              style={{ alignSelf: "center", marginRight: 15 }}
+                            >
+                              <Feather name="more-vertical" size={20} color="#F5F5F5" />
+                            </TouchableOpacity>
+                          )}
+
                         </View>
                         <Text style={styles.pointPost}>{data?.typePost}</Text>
                       </View>
@@ -384,12 +390,18 @@ const Post = () => {
                           >
                             <Feather name="message-circle" size={24} color="white" />
                           </TouchableOpacity>
-                          <TouchableOpacity
+                          {!unReport ? (<TouchableOpacity
                             key={data?._id}
                             onPress={() => handleOpenBottomSheet(data)}
                           >
                             <Feather name="send" size={24} color="white" />
+                          </TouchableOpacity>) :(
+                            <TouchableOpacity
+                          >
+                            <Feather name="send" size={24} color="black" />
                           </TouchableOpacity>
+                          )}
+
                         </View>
 
 
@@ -553,6 +565,7 @@ const Post = () => {
                               allCmt: allCmt?.filter?.(
                                 (cmt) => cmt?.posting?._id === data?._id
                               ),
+                              idPost: data?._id,
                               image: data?.user?.img,
                               user: data?.user?.fullname,
                               explanation: data?.description,

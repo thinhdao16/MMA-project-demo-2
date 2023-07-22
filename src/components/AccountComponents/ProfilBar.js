@@ -13,25 +13,23 @@ import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../views/context/AuthContext';
 
 const ProfilBar = () => {
   const bottomSheet = useRef();
   const bottomSheet2 = useRef();
   const navigation = useNavigation();
-
+const{userProfile} = React.useContext(AuthContext)
   return (
     <SafeAreaView style={styles.body}>
       <View style={styles.left}>
         <Feather name="lock" size={18} color="white" />
-        <Text style={styles.header}>love</Text>
-        <Image
-          source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
-          style={{ width: 18, height: 18 }}
-        />
+        <Text style={styles.header}>{userProfile?.fullname}</Text>
       </View>
 
       <View style={styles.right}>
-        <TouchableOpacity onPress={() => bottomSheet2.current.show()}>
+        {/* <TouchableOpacity onPress={() => bottomSheet2.current.show()}> */}
+        <TouchableOpacity>
           <FontAwesome
             name="plus-square-o"
             size={28}
@@ -98,7 +96,7 @@ const ProfilBar = () => {
         <BottomSheet
           hasDraggableIcon
           ref={bottomSheet}
-          height={400}
+          height={100}
           sheetBackgroundColor="#262626">
           <View style={{ marginTop: 15, marginLeft: 5 }}>
             <TouchableOpacity
@@ -111,7 +109,7 @@ const ProfilBar = () => {
               <Text style={styles.label}>Cài đặt</Text>
             </TouchableOpacity>
 
-            <View style={styles.sheet}>
+            {/* <View style={styles.sheet}>
               <Image
                 source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
                 style={styles.icon}
@@ -151,7 +149,7 @@ const ProfilBar = () => {
                 style={styles.icon}
               />
               <Text style={styles.label}>Trung tâm Thông tin</Text>
-            </View>
+            </View> */}
           </View>
         </BottomSheet>
 

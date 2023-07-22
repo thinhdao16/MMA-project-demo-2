@@ -55,7 +55,6 @@ const Discover = () => {
           })
         }}>
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', padding: 10 }}>
-            <FontAwesome name="times-circle" size={40} color="white" onPress={toggleModalReport} />
           </View>
 
           <View>

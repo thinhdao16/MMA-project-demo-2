@@ -1,100 +1,65 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Table, TableWrapper, Row, Cell } from 'react-native-table-component';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { Table, Row, Rows } from "react-native-table-component";
+import { AuthContext } from "../../views/context/AuthContext";
+import { DataTable } from 'react-native-paper';
+import axios from "axios";
+import data from "../../storage/database/post";
 
-export default class ExampleFour extends Component {
-    constructor(props) {
-        super(props);
-        const n = 18;
-        const tableHead = ['Number', 'Point', 'Status', 'Progess'];
-
-        const defaultState = Array.from({ length: n }, (_, index) => [`${index + 1}`, '2', '3', false]);
-        this.state = {
-            tableHead,
-            tableData: defaultState,
-        };
-        this.loadButtonStates();
-    }
-
-    async loadButtonStates() {
-        try {
-            const buttonStates = await AsyncStorage.getItem('buttonStates');
-            if (buttonStates !== null) {
-                this.setState({ tableData: JSON.parse(buttonStates) });
-            }
-        } catch (error) {
-            console.log("Error loading button states:", error);
+const ScreenBill = () => {
+    const { userProfile, accessToken } = React.useContext(AuthContext);
+    const [invoice, setInvoice] = React.useState("");
+    console.log("in", invoice)
+    React.useEffect(() => {
+        if (userProfile) {
+            axios
+                .get(`https://trading-stuff-be-iphg.vercel.app/invoice/me`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken.accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                })
+                .then((response) => {
+                    setInvoice(response.data.data.invoice)
+                })
+                .catch((error) => {
+                    console.log("error", error);
+                })
+                .finally((loading) => { });
         }
-    }
+    }, [userProfile]);
 
 
-    async saveButtonStates() {
-        try {
-            await AsyncStorage.setItem('buttonStates', JSON.stringify(this.state.tableData));
-        } catch (error) {
-            console.log("Error saving button states:", error);
-        }
-    }
+    return (
+        <View style={styles.container}>
+            <DataTable>
+                <DataTable.Header>
+                    <DataTable.Title>Name</DataTable.Title>
+                    <DataTable.Title>Email</DataTable.Title>
+                    <DataTable.Title>Progess</DataTable.Title>
 
-    _toggleStatus(index) {
-        const { tableData } = this.state;
-        tableData[index][3] = !tableData[index][3];
-        this.setState({ tableData }, () => this.saveButtonStates()); // Save button states after updating the state
-    }
+                    <DataTable.Title numeric>Point</DataTable.Title>
 
-    _getStatusContent(status) {
-        return status ? "Don't" : "Done";
-    }
+                </DataTable.Header>
+                {/* {invoice?.map((data) => {
+                    < DataTable.Row >
+                        <DataTable.Cell>{data?._id}</DataTable.Cell>
+                        <DataTable.Cell>{data?._id}</DataTable.Cell>
+                        <DataTable.Cell>john@kindacode.com</DataTable.Cell>
+                        <DataTable.Cell numeric>33</DataTable.Cell>
+                    </DataTable.Row>
+                })} */}
 
-    _getStatusStyle(status) {
-        return status ? styles.btnRed : styles.btnGreen;
-    }
-
-    render() {
-        const state = this.state;
-
-        return (
-            <View style={styles.container}>
-                <Table borderStyle={{ borderColor: 'transparent' }}>
-                    <Row data={state.tableHead} style={styles.head} textStyle={styles.text} />
-                    {state.tableData.map((rowData, index) => (
-                        <TableWrapper key={index} style={styles.row}>
-                            {rowData.map((cellData, cellIndex) => (
-                                <Cell
-                                    key={cellIndex}
-                                    data={
-                                        cellIndex === 3 ? (
-                                            <TouchableOpacity
-                                                onPress={() => this._toggleStatus(index)}
-                                            >
-                                                <View style={this._getStatusStyle(cellData)}>
-                                                    <Text style={styles.btnText}>
-                                                        {this._getStatusContent(cellData)}
-                                                    </Text>
-                                                </View>
-                                            </TouchableOpacity>
-                                        ) : (
-                                            cellData
-                                        )
-                                    }
-                                    textStyle={styles.text}
-                                />
-                            ))}
-                        </TableWrapper>
-                    ))}
-                </Table>
-            </View>
-        );
-    }
-}
+            </DataTable>
+        </View >
+    );
+};
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
-    head: { height: 40, backgroundColor: '#808B97' },
-    text: { margin: 6 },
-    row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
-    btnGreen: { width: 58, height: 18, backgroundColor: '#4CAF50', borderRadius: 2 },
-    btnRed: { width: 58, height: 18, backgroundColor: '#FF0000', borderRadius: 2 },
-    btnText: { textAlign: 'center', color: '#fff' },
+    container: {
+        paddingTop: 100,
+        paddingHorizontal: 30,
+    },
 });
+
+export default ScreenBill;

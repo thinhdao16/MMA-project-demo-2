@@ -65,9 +65,8 @@ const Right = ({ item }) => {
   const [auctionPost, setAuctionPost] = useState("");
   const flatListRef = React.useRef(null);
   const [dataAuctionInPost, setDataAuctionInPost] = useState("")
-
   const isAuctionUser = auctionPost[0]?.user?._id === userProfile?._id;
-
+  const auctionStatus = dataAuctionInPost[0]?.status === "done"
   const bidders = dataAuctionInPost[0]?.bidders;
   const maxBidAmount = bidders?.reduce((max, bidder) => {
     return bidder.bidAmount > max ? bidder.bidAmount : max;
@@ -91,10 +90,11 @@ const Right = ({ item }) => {
   const bottomSheet = useRef();
 
   const handleChangeText = (text) => {
-    if (!isAuctionUser) {
+    if (!auctionStatus) {
       setCommentText(text);
     }
   };
+
   React.useEffect(() => {
     if (auctionPost) {
       setIsLoading(false)
@@ -163,7 +163,6 @@ const Right = ({ item }) => {
       </View>
     );
   }
-  console.log(auctionPost)
   return (
     <View style={styles.right}>
       <TouchableOpacity onPress={() => setLike(!like)}>
@@ -191,20 +190,30 @@ const Right = ({ item }) => {
         <View>
           <View>
             <View>
-              <View>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginTop: 20 }}>Đấu giá</Text>
+
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginLeft: 15,
+                marginTop: 15,
+                left: 0,
+                right: 0,
+                zIndex: 1,
+              }}>
+                <Text style={{ color: '#272727', fontWeight: 'bold', fontSize: 18 }}>Đấu Giá</Text>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Đấu Giá</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', padding: 10 }}>
+                  <TouchableOpacity
+                    style={{ alignSelf: "center", marginRight: 15 }}
+                  >
+                    <Text style={{ color: "white" }}>{dataAuctionInPost[0]?.status}</Text>
+
+                  </TouchableOpacity>
                 </View>
+
               </View>
             </View>
-            {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Image source={{ uri: auctionPost[0]?.user?.img }} style={styles.sheetImage} />
-              <View>
-                <Text style={styles.sheetLabel}>{auctionPost[0]?.user?.fullname}</Text>
-                <Text style={{ color: '#a2a2a2' }}>Nhỏ nhất: {auctionPost[0]?.minPoint}</Text>
-              </View>
-            </View> */}
-          <View style={styles.line} />
+            <View style={styles.line} />
             <View>
               <FlatList
                 data={dataAuctionInPost[0]?.bidders}
@@ -220,47 +229,55 @@ const Right = ({ item }) => {
 
           </View>
           <View style={styles.line} />
-          <View style={{ alignItems: 'center', margin: 10 }}>
-            {plusBid !== undefined && (
-              <Text style={{ color: "white", width: 380 }}>{`Bạn cần nhập lớn hơn hoặc bằng: ${plusBid} nếu thêm cộng chia hết cho ${dataAuctionInPost[0]?.bidStep}`}</Text>
-            )}
+          <View>
+
           </View>
 
-          <View style={styles.bottom}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Image
-                style={styles.imageUser}
-                source={{ uri: "https://static.vecteezy.com/system/resources/previews/007/296/443/original/user-icon-person-icon-client-symbol-profile-icon-vector.jpg" }}
-              />
-              <View style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                borderWidth: 1,
-                borderColor: '#3a3a3a',
-                borderRadius: 50,
-                padding: 5,
-                width: 350,
-              }}>
 
-                <TextInput
-                  placeholder={`Comment under the name you want ...`}
-                  placeholderTextColor="#969696"
-                  style={styles.input}
-                  value={commentText}
-                  multiline
-                  onChangeText={handleChangeText}
-                  keyboardType="numeric"
-                />
-
-                {!commentText.length ? (
-                  <Text style={{ color: '#254253', marginLeft: -60, marginRight: 10 }}>Đăng</Text>
-                ) : (
-                  <Text style={{ color: '#0096fd', marginLeft: -60, marginRight: 10 }} onPress={handleUploadImage} >Đăng</Text>
+          {!isAuctionUser && !auctionStatus && (
+            <View>
+              <View style={{ alignItems: 'center', margin: 10 }}>
+                {plusBid !== undefined && (
+                  <Text style={{ color: "white", width: 380 }}>{`Bạn cần nhập lớn hơn hoặc bằng: ${plusBid} nếu thêm cộng chia hết cho ${dataAuctionInPost[0]?.bidStep}`}</Text>
                 )}
               </View>
+              <View style={styles.bottom}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Image
+                    style={styles.imageUser}
+                    source={{ uri: "https://static.vecteezy.com/system/resources/previews/007/296/443/original/user-icon-person-icon-client-symbol-profile-icon-vector.jpg" }}
+                  />
+                  <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: '#3a3a3a',
+                    borderRadius: 50,
+                    padding: 5,
+                    width: 350,
+                  }}>
+
+
+                    <TextInput
+                      placeholder={`Comment under the name you want ...`}
+                      placeholderTextColor="#969696"
+                      style={styles.input}
+                      value={commentText}
+                      multiline
+                      onChangeText={handleChangeText}
+                      keyboardType="numeric"
+                    />
+                    {!commentText.length ? (
+                      <Text style={{ color: '#254253', marginLeft: -60, marginRight: 10 }}>Đăng</Text>
+                    ) : (
+                      <Text style={{ color: '#0096fd', marginLeft: -60, marginRight: 10 }} onPress={handleUploadImage} >Đăng</Text>
+                    )}
+                  </View>
+                </View>
+              </View>
             </View>
-          </View>
+          )}
 
         </View>
 

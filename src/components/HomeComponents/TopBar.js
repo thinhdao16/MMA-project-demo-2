@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button, Image, StatusBar, Text, TouchableOpacity, View, Platform, TextInput, ScrollView, ToastAndroid } from 'react-native';
-// import ImagePicker from 'react-native-image-crop-picker';
+import { Button, Image, StatusBar, Text, TouchableOpacity, View, Platform, TextInput, ScrollView, ToastAndroid,ActivityIndicator } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
@@ -15,7 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const TopBar = () => {
 
   const navigation = useNavigation();
-  const { userProfile, accessToken, fetchAllData } = React.useContext(AuthContext)
+  const { userProfile, accessToken, fetchAllData, isLoading } = React.useContext(AuthContext)
   const [isModalVisible, setModalVisible] = React.useState(false);
   const [imageUri, setImageUri] = React.useState(null);
   const [content, setContent] = React.useState("")
@@ -113,8 +112,7 @@ const TopBar = () => {
   return (
 
     <View style={styles.body}>
-      {/* modal */}
-      <Modal isVisible={isModalVisible} style={{ maxHeight: 900 }} >
+        <Modal isVisible={isModalVisible} style={{ maxHeight: 900 }} >
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={{
             flex: 1,
@@ -232,7 +230,6 @@ const TopBar = () => {
         </ScrollView>
       </Modal>
 
-      {/*modla*/}
       <StatusBar backgroundColor="black" />
       <TouchableOpacity onPress={handleUserPointsPress}>
         <View style={styles.logoContainer}>
@@ -262,6 +259,7 @@ const TopBar = () => {
           />
         </TouchableOpacity>
       </View>
+    
     </View>
   );
 };
