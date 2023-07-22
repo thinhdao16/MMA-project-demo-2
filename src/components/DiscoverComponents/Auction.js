@@ -51,7 +51,6 @@ function Auction(props) {
     // };
     const [follow, setFollow] = useState(data?.follow);
     const {auctionData} = React.useContext(AuthContext)
-    console.log(auctionData[0])
     return (
         <View>
             <ScrollView>

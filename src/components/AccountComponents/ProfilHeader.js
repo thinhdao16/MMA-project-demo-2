@@ -20,12 +20,12 @@ const ProfileHeader = ({ route }) => {
         </View>
 
         <View style={styles.mid}>
-          <Text style={styles.numberContainer}>404</Text>
+          <Text style={styles.numberContainer}>{userProfile?.followedBy?.length}</Text>
           <Text style={styles.text}>Người theo dõi</Text>
         </View>
 
         <View style={styles.right}>
-          <Text style={styles.numberContainer}>387</Text>
+          <Text style={styles.numberContainer}>{userProfile?.following?.length}</Text>
           <Text style={styles.text}>Theo dõi</Text>
         </View>
       </View>
